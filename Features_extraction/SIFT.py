@@ -1,17 +1,12 @@
-import import_images as i
-import classification_class as classification
-
 import cv2
 import numpy as np
 from sklearn.cluster import KMeans
-from sklearn.svm import SVC
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score
 import matplotlib.pyplot as plt
+import sys
+import os
 
-# Assume you have:
-# images -> list of images (numpy arrays)
-# Y -> list of labels (0: no pothole, 1: pothole)
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'Data_processing')))
+import import_images as i
 
 # 1. Extract SIFT features from all images
 print("=========1. Extract SIFT features from all images=========")
