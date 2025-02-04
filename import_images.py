@@ -14,8 +14,8 @@ def load_images_cv2(folder_path):
     return images
 
 
-images_normal = load_images_cv2("potholes/normal/")
-images_potholes = load_images_cv2("potholes/potholes/")
+images_normal = load_images_cv2("Data/normal/")
+images_potholes = load_images_cv2("Data/potholes/")
 
 images = images_normal + images_potholes
 Y = [0]*len(images_normal) +[1]*len(images_potholes)
