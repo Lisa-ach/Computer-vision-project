@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import pandas as pd
-from skimage.filters import prewitt, roberts, laplace, threshold_otsu
+from skimage.filters import prewitt, roberts, laplace, threshold_otsu, scharr
 from skimage.feature import local_binary_pattern
 import sys
 import os
@@ -37,24 +37,37 @@ def extract_features_from_images(image_list):
         prewitt_edges = prewitt(gray)
         laplacian_edges = laplace(gray)
         roberts_edges = roberts(gray)
+        scharrx = scharr(gray, axis=0)
+        scharry = scharr(gray, axis=1)
+        adaptive_thresh = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                                cv2.THRESH_BINARY, 11, 2)
         lbp = local_binary_pattern(gray, P=8, R=1, method='uniform')
         
         # Extract meaningful statistical features
         features_list.append([
-            np.sum(edges_canny) / edges_canny.size,
+            np.mean(edges_canny), np.std(edges_canny),
             np.mean(sobelx), np.std(sobelx),
             np.mean(sobely), np.std(sobely),
-            np.sum(prewitt_edges) / prewitt_edges.size,
-            np.sum(laplacian_edges) / laplacian_edges.size,
-            np.sum(roberts_edges) / roberts_edges.size,
+            np.mean(prewitt_edges), np.std(prewitt_edges),
+            np.mean(laplacian_edges), np.std(laplacian_edges),
+            np.mean(roberts_edges), np.std(roberts_edges),
+            np.mean(scharrx), np.std(scharrx),
+            np.mean(scharry), np.std(scharry),
+            np.mean(adaptive_thresh), np.std(adaptive_thresh),
             np.mean(lbp), np.std(lbp)
         ])
 
     # Convert to DataFrame
     features_df = pd.DataFrame(features_list, columns=[
-        'canny_edge_density', 'sobelx_mean', 'sobelx_std',
-        'sobely_mean', 'sobely_std', 'prewitt_edge_density',
-        'laplacian_edge_density', 'roberts_edge_density',
+        'canny_mean', 'canny_std',
+        'sobelx_mean', 'sobelx_std',
+        'sobely_mean', 'sobely_std',
+        'prewitt_mean', 'prewitt_std',
+        'laplacian_mean', 'laplacian_std',
+        'roberts_mean', 'roberts_std',
+        'scharrx_mean', 'scharrx_std',
+        'scharry_mean', 'scharry_std',
+        'adaptive_thresh_mean', 'adaptive_thresh_std',
         'lbp_mean', 'lbp_std'
     ])
 
