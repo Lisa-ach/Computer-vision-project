@@ -52,24 +52,24 @@ def method_SIFT (images):
 
     return feature_vectors
 
-def method_SURF(images):
-    # 1. Extract SURF features from all images
-    print("=========1. Extract SURF features from all images=========")
-    surf = cv2.xfeatures2d.SURF_create()
+def method_ORB(images):
+    # 1. Extract ORB features from all images
+    print("=========1. Extract ORB features from all images=========")
+    orb = cv2.ORB_create()
     descriptors_list = []
 
     for img in images:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
-        keypoints, descriptors = surf.detectAndCompute(gray, None)
+        keypoints, descriptors = orb.detectAndCompute(gray, None)
         if descriptors is not None:
             descriptors_list.append(descriptors)
             img_with_keypoints = cv2.drawKeypoints(img, keypoints, None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-            
+
             # Display the image
             # plt.figure(figsize=(8, 6))
             # plt.imshow(cv2.cvtColor(img_with_keypoints, cv2.COLOR_BGR2RGB))  # Convert BGR to RGB for proper color display
             # plt.axis('off')
-            # plt.title(f"SURF Features ({len(keypoints)} Keypoints)")
+            # plt.title(f"ORB Features ({len(keypoints)} Keypoints)")
             # plt.show()
 
     # 2. Stack all descriptors for clustering (BoVW)
@@ -93,5 +93,4 @@ def method_SURF(images):
         return feature_histogram
 
     feature_vectors = [extract_features(desc, kmeans, num_clusters) for desc in descriptors_list]
-    
     return feature_vectors
