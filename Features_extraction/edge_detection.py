@@ -23,7 +23,11 @@ def extract_features_from_images(image_list):
     features_list = []
 
     for img in image_list:
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+        if len(img.shape) == 3 and img.shape[2] == 3:
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+        else:
+            gray = img
+        #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
         
         # Apply different edge detection methods
         otsu_thresh = threshold_otsu(gray)

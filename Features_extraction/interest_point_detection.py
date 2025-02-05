@@ -15,7 +15,11 @@ def method_SIFT (images):
     descriptors_list = []
 
     for img in images:
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+        if len(img.shape) == 3 and img.shape[2] == 3:
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+        else:
+            gray = img
+        #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
         keypoints, descriptors = sift.detectAndCompute(gray, None)
         if descriptors is not None:
             descriptors_list.append(descriptors)
@@ -59,7 +63,11 @@ def method_ORB(images):
     descriptors_list = []
 
     for img in images:
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+        if len(img.shape) == 3 and img.shape[2] == 3:
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+        else:
+            gray = img
+        #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
         keypoints, descriptors = orb.detectAndCompute(gray, None)
         if descriptors is not None:
             descriptors_list.append(descriptors)

@@ -32,7 +32,10 @@ def preprocess_image(image):
     :param image: Input BGR image.
     :return: Preprocessed image.
     """
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+    if len(image.shape) == 3 and image.shape[2] == 3:
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+    else:
+        gray = image
     smoothed = gaussian_filter(gray)  # Noise Reduction & Smoothing
     enhanced = histogram_equalization(smoothed)  # Illumination Adjustment
     return enhanced
