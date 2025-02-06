@@ -2,7 +2,7 @@ Multiple feature extraction algorithms are used.
 
 # I. Interest point detection algorithms
 
-## 1. Grayscale
+Interest point detection algorithms focus on finding distinctive points that are easy to match across images.
 
 - **SIFT (Scale-Invariant Feature Transform), 1999**
 
@@ -25,13 +25,17 @@ The $16 \times 16$ grid is divided into 16 smaller $ 4 \times 4$ cells so that e
 
 - **ORB (Oriented FAST and Rotated BRIEF), 2011**
 
-## 2. Color
+ORB is a fast and free **alternative to SIFT and SURF**. It uses the **FAST algorithm** to detect keypoints. FAST identifies corners by analyzing around each pixel a small circular neighborhood of 16 pixels. If $N$ ($N = 9$ typically) contiguous pixels in the circle are all darker or brighter by a threshold compared to a pixel, then the pixel is considered a corner. FAST is efficient as instead of checking all pixels in the circle, it first checks if 4 of these pixels meet the condition, and if it is the case, the entire circle is checked.
 
+# II. Edge detection algorithms
 
+Edge detection algorithms focus on detecting object boundaries.
 
 # References
 
 David G. Lowe. (2004) Distinctive Image Features from Scale-Invariant Keypoints. International Journal of Computer Vision 
+
+Edward Rosten and Tom Drummond. (2006) Machine Learning for High-Speed Corner Detection.  European Conference on Computer Vision
 
 
 
