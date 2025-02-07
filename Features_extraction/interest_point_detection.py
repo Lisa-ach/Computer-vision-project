@@ -88,7 +88,7 @@ def method_ORB(images):
 
     # 3. Cluster descriptors using KMeans (BoVW approach)
     print("=========3. Cluster descriptors using KMeans (BoVW approach) =========")
-    num_clusters = 5  # You can tune this parameter
+    num_clusters = 5
     kmeans = KMeans(n_clusters=num_clusters, random_state=42, n_init=10)
     kmeans.fit(all_descriptors)
 
