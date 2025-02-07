@@ -23,6 +23,7 @@ def extract_features_from_images(image_list):
     features_list = []
 
     for img in image_list:
+        # Check if it is not already in grayscale
         if len(img.shape) == 3 and img.shape[2] == 3:
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
         else:

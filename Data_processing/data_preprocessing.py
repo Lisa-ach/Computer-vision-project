@@ -32,7 +32,7 @@ def normalize_image(image):
     """Normalize pixel values to range [0, 1]."""
     return image.astype(np.float32) / 255.0
 
-def preprocess_image(image, method="gaussian", equalization="hist", normalize=True, gamma=None):
+def preprocess_image(image, color='gray', method="gaussian", equalization="hist", normalize=True, gamma=None):
     """
     Perform data preprocessing on the input image.
 

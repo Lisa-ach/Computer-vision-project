@@ -15,6 +15,7 @@ def method_SIFT (images):
     descriptors_list = []
 
     for img in images:
+        # Check if it is not already in grayscale
         if len(img.shape) == 3 and img.shape[2] == 3:
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
         else:
@@ -63,6 +64,7 @@ def method_ORB(images):
     descriptors_list = []
 
     for img in images:
+        # Check if it is not already in grayscale
         if len(img.shape) == 3 and img.shape[2] == 3:
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
         else:
