@@ -20,6 +20,7 @@ Once the key points are detected, **descriptors** are created to describe them a
 
 $$M(x,y) = \sqrt{G_x^2 + G_y^2} ; \theta(x,y) = tan^{-1} (\frac{G_y}{G_x})$$
 
+The $16 \times 16$ grid is divided into 16 smaller $4 \times 4$ cells so that each $4 \times 4$ region has its own orientation histogram, each containing 8 orientation bins. Therefore, each cell gives 8 orientation bins, and consequently the key point descriptor contains $8 \times 16 = 128$ values. 
 
 
 - **ORB (Oriented FAST and Rotated BRIEF), 2011**
