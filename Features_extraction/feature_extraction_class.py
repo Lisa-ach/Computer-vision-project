@@ -113,7 +113,7 @@ class FeatureExtraction:
     # ===================================================================================================
     # 2. Edge extraction methods
 
-    def edge_detection_methods(self):
+    def method_EDGE(self):
         """
         Extract edge detection features from a given list of images.
 
