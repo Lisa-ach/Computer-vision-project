@@ -277,3 +277,54 @@ class ImagesProcessing:
 
         # Return the best configuration and all results
         return best_config, results  
+
+    def apply_preprocessing(self, config):
+        """
+        Apply the best preprocessing configuration found.
+
+        :param config: Best configuration containing the filter type, histogram equalization, gamma correction, and normalization.
+        :type config: dict
+        """
+        # Reset images to their original state before applying any preprocessing
+        self.images = self.images_normal + self.images_potholes
+
+        # Apply the selected filter if specified in the configuration
+        if "filter" in config:
+            if config["filter"] == "gaussian":
+                # Apply Gaussian blur with the given kernel size and sigma value
+                self.apply_filter(filter_type="gaussian", 
+                                kernel_size_gaussian=config["filter_params"][0], 
+                                sigma_x=config["filter_params"][1])
+            elif config["filter"] == "bilateral":
+                # Apply Bilateral filter with the specified diameter and sigma values
+                self.apply_filter(filter_type="bilateral", 
+                                d=config["filter_params"][0], 
+                                sigma_color=config["filter_params"][1], 
+                                sigma_space=config["filter_params"][2])
+            elif config["filter"] == "median":
+                # Apply Median blur with the specified kernel size
+                self.apply_filter(filter_type="median", kernel_size_median=config["filter_params"][0])
+
+        # Apply histogram equalization if it is not set to "none"
+        if "histogram" in config and config["histogram"] != "none":
+            # Use either standard histogram equalization or CLAHE (adaptive histogram equalization)
+            self.apply_histogram_equalization(method=config["histogram"])
+
+        # Apply gamma correction if a gamma value is provided (not "none")
+        if "gamma" in config and config["gamma"] != "none":
+            self.apply_gamma_correction(gamma=config["gamma"])
+
+        # Apply normalization if specified in the configuration
+        if "normalize" in config and config["normalize"]:
+            self.normalize_image()
+            
+
+        self.images = [
+            (img * 255).astype(np.uint8) if img.dtype != np.uint8 else img  # Convert to uint8
+            for img in self.images
+        ]
+
+        self.images = [
+            cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) if len(img.shape) == 3 else img  # Convert to grayscale if needed
+            for img in self.images
+        ]
