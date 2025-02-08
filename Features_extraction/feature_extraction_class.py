@@ -21,7 +21,8 @@ class FeatureExtraction:
     # 1. Interest points detection methods
         
     def method_SIFT (self):
-        print("Extracting SIFT Features")
+        print("============================================")
+        print("\033[1mExtracting SIFT Features\033[0;0m")
         # 1. Extract SIFT features from all images
         sift = cv2.SIFT_create()
         descriptors_list = []
@@ -32,7 +33,6 @@ class FeatureExtraction:
                 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
             else:
                 gray = img
-            #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
             keypoints, descriptors = sift.detectAndCompute(gray, None)
             if descriptors is not None:
                 descriptors_list.append(descriptors)
@@ -67,7 +67,8 @@ class FeatureExtraction:
         return feature_vectors
 
     def method_ORB(self):
-        print("Extracting ORB Features")
+        print("============================================")
+        print("\033[1mExtracting ORB Features\033[0;0m")
         # 1. Extract ORB features from all images
         orb = cv2.ORB_create()
         descriptors_list = []
@@ -78,20 +79,15 @@ class FeatureExtraction:
                 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
             else:
                 gray = img
-            #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
             keypoints, descriptors = orb.detectAndCompute(gray, None)
-            if descriptors is not None:
-                descriptors_list.append(descriptors)
-                img_with_keypoints = cv2.drawKeypoints(img, keypoints, None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
 
-                # Display the image
-                # plt.figure(figsize=(8, 6))
-                # plt.imshow(cv2.cvtColor(img_with_keypoints, cv2.COLOR_BGR2RGB))  # Convert BGR to RGB for proper color display
-                # plt.axis('off')
-                # plt.title(f"ORB Features ({len(keypoints)} Keypoints)")
-                # plt.show()
+            if descriptors is None: # if not descriptor found, add by default a vector of zeros
+                descriptors = np.zeros((0, 32), dtype=np.uint8)
+           
+            descriptors_list.append(descriptors)
 
         # 2. Stack all descriptors for clustering (BoVW)
+        non_empty_descriptors = [desc for desc in descriptors_list if desc.shape[0] > 0] # remove zeros vectors
         all_descriptors = np.vstack(descriptors_list)
 
         # 3. Cluster descriptors using KMeans (BoVW approach)
@@ -99,16 +95,19 @@ class FeatureExtraction:
         kmeans = KMeans(n_clusters=num_clusters, random_state=42, n_init=10)
         kmeans.fit(all_descriptors)
 
-        # 4. Create feature histograms for each image
-        def extract_features(image_descriptors, kmeans_model, num_clusters):
-            feature_histogram = np.zeros(num_clusters)
-            if image_descriptors is not None:
-                labels = kmeans_model.predict(image_descriptors)
+        feature_vectors = []
+        for desc in descriptors_list:
+            if desc.shape[0] == 0:
+                # Image without descriptors => null histogram
+                feature_histogram = np.zeros(num_clusters, dtype=np.float32)
+            else:
+                labels = kmeans.predict(desc)
+                feature_histogram = np.zeros(num_clusters, dtype=np.float32)
                 for label in labels:
                     feature_histogram[label] += 1
-            return feature_histogram
+            
+            feature_vectors.append(feature_histogram)
 
-        feature_vectors = [extract_features(desc, kmeans, num_clusters) for desc in descriptors_list]
         return feature_vectors
     
     # ===================================================================================================
@@ -121,7 +120,8 @@ class FeatureExtraction:
         Returns:
         pd.DataFrame: DataFrame containing extracted edge detection features.
         """
-        print("Extracting Edge features")
+        print("============================================")
+        print("\033[1mExtracting Edge features\033[0;0m")
         features_list = []
 
         for img in self.images:
