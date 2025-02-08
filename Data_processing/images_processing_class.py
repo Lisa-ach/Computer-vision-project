@@ -1,6 +1,14 @@
 import os
+import sys
 import cv2
 import numpy as np
+import itertools
+import pandas as pd
+import random
+
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'Classification')))
+from Classification import classification_class as classification
 
 
 
@@ -158,3 +166,114 @@ class ImagesProcessing:
         self.images = [img.astype(np.float32) / 255.0 for img in self.images]
 
 
+
+
+    def find_best_preprocessing(self, feature_extraction_method, associated_filter, n_iter=50):
+        """
+        Finds the best preprocessing configuration for a given feature extraction method and its associated image filter.
+        
+        :param feature_extraction_method: The function to extract features from images.
+        :type feature_extraction_method: function
+        
+        :param associated_filter: The filter to apply before feature extraction ('gaussian', 'bilateral' or 'median').
+        :type associated_filter: str
+        
+        :param classifier: An instance of the BinaryClassification class.
+        :type classifier: BinaryClassification
+        
+        :return: 
+            - best_config (dict): The best preprocessing configuration with its hyperparameters and performance.
+            - results (list): A list containing all tested configurations with their corresponding performance.
+        :rtype: tuple (dict, list)
+
+        """
+
+        # Define possible hyperparameter values for each filter
+        filter_params = {
+            "gaussian": {"kernel_size_gaussian": [(3, 3), (5, 5), (7, 7)], "sigma_x": [0, 1, 2]},
+            "bilateral": {"d": [5, 9, 12], "sigma_color": [50, 75, 100], "sigma_space": [50, 75, 100]},
+            "median": {"kernel_size_median": [3, 5, 7]}
+        }
+        
+        # Add "none" as an option to disable histogram equalization or gamma correction
+        histogram_methods = ["none", "standard", "clahe"]
+        gamma_values = ["none", 0.8, 1.0, 1.2, 1.5]
+        normalization_options = [True, False]  # Whether to apply normalization or not
+
+        # Generate all possible combinations of preprocessing parameters
+        all_param_grid = list(itertools.product(
+            [tuple(v) for v in zip(*filter_params[associated_filter].values())],  # Regrouper les params du filtre
+            histogram_methods,
+            gamma_values,
+            normalization_options
+        ))
+        
+        # Select a random subset of n_iter configurations
+        param_grid = random.sample(all_param_grid, min(n_iter, len(all_param_grid)))
+
+        best_score = -1  # To store the best F1-score obtained
+        best_config = None  # To store the best preprocessing configuration
+        results = []  # To store all tested configurations
+
+        # Iterate over all preprocessing parameter combinations
+        for (param_values), hist_method, gamma, normalize in param_grid:
+            # Reset images to their original state
+            self.images = self.images_normal + self.images_potholes
+
+            # Apply the selected filter with its corresponding parameters
+            if associated_filter == "gaussian":
+                self.apply_filter(filter_type="gaussian", kernel_size_gaussian=param_values[0], sigma_x=param_values[1])
+            elif associated_filter == "bilateral":
+                self.apply_filter(filter_type="bilateral", d=param_values[0], sigma_color=param_values[1], sigma_space=param_values[2])
+            elif associated_filter == "median":
+                self.apply_filter(filter_type="median", kernel_size_median=param_values[0])
+
+            # Apply histogram equalization only if selected
+            if hist_method != "none":
+                self.apply_histogram_equalization(method=hist_method)
+
+            # Apply gamma correction only if selected
+            if gamma != "none":
+                self.apply_gamma_correction(gamma=gamma)
+
+            # Apply normalization only if selected
+            if normalize:
+                self.normalize_image()
+
+            # Extract features using the given method
+            features = feature_extraction_method()
+
+            # Ensure features are formatted as a DataFrame
+            if isinstance(features, pd.DataFrame):
+                df_features = features
+            else:
+                df_features = pd.DataFrame(features)
+
+            # Prepare data for classification
+            data_processed = classification.DataProcessing(df_features, pd.DataFrame(self.labels), stratified=False)
+            env_classifier = classification.BinaryClassification(data_processed, average="macro")
+
+            # Train and evaluate using Logistic Regression
+            metrics_results, _, _ = env_classifier.TrainTestLogisticRegression()
+
+            # Retrieve the F1-score on the test set for evaluation
+            test_f1_score = metrics_results["f1-score"]["LogReg Test"][0]
+
+            # Store results for analysis
+            config_result = {
+                "filter": associated_filter,
+                "filter_params": param_values,
+                "histogram": hist_method,
+                "gamma": gamma,
+                "normalize": normalize,
+                "f1-score": test_f1_score
+            }
+            results.append(config_result)
+
+            # Update the best configuration if a higher F1-score is found
+            if test_f1_score > best_score:
+                best_score = test_f1_score
+                best_config = config_result
+
+        # Return the best configuration and all results
+        return best_config, results  
