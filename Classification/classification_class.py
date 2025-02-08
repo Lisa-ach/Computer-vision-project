@@ -256,7 +256,7 @@ class BinaryClassification:
         :return: best hyperparameters and performance
         :rtype: tuple
         """
-        print("Optimization Logistic Regression")
+        # print("Optimization Logistic Regression")
         logreg = LogisticRegression(max_iter=10000)
         
         # Hyperparameters to test
@@ -290,7 +290,7 @@ class BinaryClassification:
         :return: best hyperparameters and performance
         :rtype: tuple
         """
-        print("Optimization Classification Decision Tree")
+        # print("Optimization Classification Decision Tree")
         param_grid = {
             'max_depth': [None, 5, 10, 15, 20],
             'min_samples_split': [2, 5, 10],
@@ -325,7 +325,7 @@ class BinaryClassification:
         :return: best hyperparameters and performance
         :rtype: tuple
         """
-        print("Optimization Random Forest")
+        # print("Optimization Random Forest")
         param_grid = {
             'max_depth': list(range(1, depth_max + 1)) + [None],
             # 'min_samples_split': [2, 5, 10],
@@ -349,8 +349,7 @@ class BinaryClassification:
 
         return best_params, performance
 
-    def optimal_hyperparameters(self, depth_max=10, n_estimators_max_ada=50, learning_rate_max_ada=2.0,
-                                n_estimators_max_gb =50, learning_rate_max_gb=2.0, max_depth_max_gb=5, n_knn=5, bootstrap=True, oob_score=True):
+    def optimal_hyperparameters(self, depth_max=10):
 
         """
         Optimizes hyperparameters for all classification methods, updates `self.models` with the best models, 
@@ -358,30 +357,6 @@ class BinaryClassification:
     
         :param depth_max: Maximum depth for tree-based models such as Random Forest and Extra Trees.
         :type depth_max: int, default=10
-    
-        :param n_estimators_max_ada: Maximum number of estimators for AdaBoost.
-        :type n_estimators_max_ada: int, default=50
-    
-        :param learning_rate_max_ada: Maximum learning rate for AdaBoost.
-        :type learning_rate_max_ada: float, default=2.0
-    
-        :param n_estimators_max_gb: Maximum number of estimators for Gradient Boosting.
-        :type n_estimators_max_gb: int, default=50
-    
-        :param learning_rate_max_gb: Maximum learning rate for Gradient Boosting.
-        :type learning_rate_max_gb: float, default=2.0
-    
-        :param max_depth_max_gb: Maximum depth for Gradient Boosting trees.
-        :type max_depth_max_gb: int, default=5
-    
-        :param n_knn: Number of neighbors to use for K-Nearest Neighbors.
-        :type n_knn: int, default=5
-    
-        :param bootstrap: Whether bootstrap samples are used when building trees (applicable for Extra Trees).
-        :type bootstrap: bool, default=True
-    
-        :param oob_score: Whether to use out-of-bag samples to estimate the generalization accuracy (applicable for Extra Trees).
-        :type oob_score: bool, default=True
     
         :return: A dictionary where each key is the name of a classification method and each value is another dictionary 
                 containing the best hyperparameters (`best_params`) and the corresponding performance metrics (`performance`).
@@ -412,8 +387,7 @@ class BinaryClassification:
         
         return results
 
-    def TrainTest(self, find_optimal_hyperparameters=False, bootstrap=True,oob_score=True, depth_max=10,
-        n_estimators_max_ada=50, learning_rate_max_ada=2.0, n_estimators_max_gb=50, learning_rate_max_gb=2.0, max_depth_max_gb=5, n_knn=5):
+    def TrainTest(self, find_optimal_hyperparameters=False, depth_max=10):
 
         """
         Optimizes hyperparameters for all classification methods, trains each model, and evaluates their performance 
@@ -429,32 +403,8 @@ class BinaryClassification:
         :param find_optimal_hyperparameters: Whether to perform hyperparameters optimization before training.
         :type find_optimal_hyperparameters: bool, default=False
     
-        :param bootstrap: Whether bootstrap samples are used when building trees (applicable for Extra Trees).
-        :type bootstrap: bool, default=True
-    
-        :param oob_score: Whether to use out-of-bag samples to estimate the generalization accuracy (applicable for Extra Trees).
-        :type oob_score: bool, default=True
-    
         :param depth_max: Maximum depth for tree-based models such as Random Forest and Extra Trees.
         :type depth_max: int, default=10
-    
-        :param n_estimators_max_ada: Maximum number of estimators for AdaBoost.
-        :type n_estimators_max_ada: int, default=50
-    
-        :param learning_rate_max_ada: Maximum learning rate for AdaBoost.
-        :type learning_rate_max_ada: float, default=2.0
-    
-        :param n_estimators_max_gb: Maximum number of estimators for Gradient Boosting.
-        :type n_estimators_max_gb: int, default=50
-    
-        :param learning_rate_max_gb: Maximum learning rate for Gradient Boosting.
-        :type learning_rate_max_gb: float, default=2.0
-    
-        :param max_depth_max_gb: Maximum depth for Gradient Boosting trees.
-        :type max_depth_max_gb: int, default=5
-    
-        :param n_knn: Number of neighbors to use for K-Nearest Neighbors.
-        :type n_knn: int, default=5
     
         :return: 
             A tuple containing:
@@ -467,15 +417,7 @@ class BinaryClassification:
 
         if find_optimal_hyperparameters:
             _ = self.optimal_hyperparameters(
-                depth_max=depth_max, 
-                n_estimators_max_ada=n_estimators_max_ada, 
-                learning_rate_max_ada=learning_rate_max_ada,
-                n_estimators_max_gb=n_estimators_max_gb, 
-                learning_rate_max_gb=learning_rate_max_gb, 
-                max_depth_max_gb=max_depth_max_gb,
-                n_knn=n_knn,
-                bootstrap=bootstrap,
-                oob_score=oob_score
+                depth_max=depth_max
             )
 
         treemod = DecisionTreeClassifier()
@@ -529,9 +471,88 @@ class BinaryClassification:
             models_dict[method] = model
 
         return metrics_results, predictions, models_dict
+    
+    def TrainTestLogisticRegression(self, find_optimal_hyperparameters=False, depth_max=10):
 
-    def CrossValidationKFold(self, n_splits=5, shuffle=True, bootstrap=True,oob_score=True, depth_max=10,
-        n_estimators_max_ada=50, learning_rate_max_ada=2.0, n_estimators_max_gb=50, learning_rate_max_gb=2.0, max_depth_max_gb=5, n_knn=5):
+        """
+        Optimizes hyperparameters for all classification methods, trains each model, and evaluates their performance 
+        on both training and testing datasets.
+    
+        This function performs the following steps:
+        1. Optimizes hyperparameters for various classification methods by invoking `optimal_hyperparameters`.
+        2. Trains each optimized model on the training data.
+        3. Makes predictions on both training and testing datasets.
+        4. Evaluates and stores performance metrics for each model on both datasets.
+        5. Prepares data for visualization or further analysis.
+
+        :param find_optimal_hyperparameters: Whether to perform hyperparameters optimization before training.
+        :type find_optimal_hyperparameters: bool, default=False
+    
+        :param depth_max: Maximum depth for tree-based models such as Random Forest and Extra Trees.
+        :type depth_max: int, default=10
+    
+        :return: 
+            A tuple containing:
+            - metrics_results: Dictionary containing the metrics computed on training and testing datasets
+            - predictions: Dictionary containing predictions for each method on training and testing datasets
+            - models_dict: Dictionary containing the trained models.
+        
+        :rtype: tuple (dict, dict)
+        """
+
+        # Optimization Logistic Regression
+        best_params_logreg, _= self.logisticRegression()
+
+        metrics_results = {
+
+        "accuracy" : { 
+            "LogReg Train":[],
+            "LogReg Test" :[],
+            },
+
+        "f1-score" : { 
+            "LogReg Train":[],
+            "LogReg Test" :[],
+            },
+
+        "recall" :{ 
+            "LogReg Train":[],
+            "LogReg Test" :[],
+            },
+
+        "precision" :{ 
+            "LogReg Train":[],
+            "LogReg Test" :[],
+            },
+
+        "roc_auc" : { 
+            "LogReg Train":[],
+            "LogReg Test" :[],
+            }
+        }
+
+        models_dict = {}
+        predictions = {}
+        
+        model = LogisticRegression(**best_params_logreg, max_iter=10000)
+        model.fit(self.data.X_train, self.data.y_train)
+
+        y_train_pred = model.predict(self.data.X_train)
+        y_test_pred = model.predict(self.data.X_test)
+        
+        predictions["LogReg Train"] = y_train_pred
+        predictions["LogReg Test"] = y_test_pred
+            
+        for metric in list(self.metrics_dict.keys()):
+            metrics_results[metric]["LogReg Train"].append(self.metrics_dict[metric](self.data.y_train, y_train_pred))
+            metrics_results[metric]["LogReg Test"].append(self.metrics_dict[metric](self.data.y_test, y_test_pred))
+
+        models_dict["LogReg"] = model
+
+        return metrics_results, predictions, models_dict
+    
+
+    def CrossValidationKFold(self, n_splits=5, shuffle=True, depth_max=10):
 
         """
         Optimizes hyperparameters for all classification methods, trains each model and evaluates their performance using KFold,
@@ -550,47 +571,15 @@ class BinaryClassification:
         :param shuffle: Whether to shuffle the data before splitting into batches.
         :type shuffle: bool, default=False
     
-        :param bootstrap: Whether bootstrap samples are used when building trees (applicable for Extra Trees).
-        :type bootstrap: bool, default=True
-    
-        :param oob_score: Whether to use out-of-bag samples to estimate the generalization accuracy (applicable for Extra Trees).
-        :type oob_score: bool, default=True
-    
-        :param depth_max: Maximum depth for tree-based models such as Random Forest and Extra Trees.
+        :param depth_max: Maximum depth for tree-based models such as Random Forest.
         :type depth_max: int, default=10
-    
-        :param n_estimators_max_ada: Maximum number of estimators for AdaBoost.
-        :type n_estimators_max_ada: int, default=50
-    
-        :param learning_rate_max_ada: Maximum learning rate for AdaBoost.
-        :type learning_rate_max_ada: float, default=2.0
-    
-        :param n_estimators_max_gb: Maximum number of estimators for Gradient Boosting.
-        :type n_estimators_max_gb: int, default=50
-    
-        :param learning_rate_max_gb: Maximum learning rate for Gradient Boosting.
-        :type learning_rate_max_gb: float, default=2.0
-    
-        :param max_depth_max_gb: Maximum depth for Gradient Boosting trees.
-        :type max_depth_max_gb: int, default=5
-    
-        :param n_knn: Number of neighbors to use for K-Nearest Neighbors.
-        :type n_knn: int, default=5
     
         :return: metrics_results: Dictionary containing the metrics computed on each fold
         :rtype: dict
         """
 
         results = self.optimal_hyperparameters(
-            depth_max=depth_max, 
-            n_estimators_max_ada=n_estimators_max_ada, 
-            learning_rate_max_ada=learning_rate_max_ada,
-            n_estimators_max_gb=n_estimators_max_gb, 
-            learning_rate_max_gb=learning_rate_max_gb, 
-            max_depth_max_gb=max_depth_max_gb,
-            n_knn=n_knn,
-            bootstrap=bootstrap,
-            oob_score=oob_score
+            depth_max=depth_max
         )
         
         if self.data.stratified:
