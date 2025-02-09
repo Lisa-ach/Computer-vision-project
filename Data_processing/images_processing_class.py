@@ -11,7 +11,6 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'C
 from Classification import classification_class as classification
 
 
-
 class ImagesProcessing:
     def __init__(self, folder_normal, folder_potholes, img_size=(256,256)):
         """
@@ -33,8 +32,6 @@ class ImagesProcessing:
         self.images_potholes = self.load_images_cv2(folder_potholes)
         self.labels = [0] * len(self.images_normal) + [1] * len(self.images_potholes)
         self.images = self.images_normal + self.images_potholes
-
-
 
     def load_images_cv2(self, folder_path, gray=True, resize=True):
         """
@@ -67,7 +64,6 @@ class ImagesProcessing:
                     images.append(img)
                         
         return images
-
 
 
     def apply_filter(self, filter_type, kernel_size_gaussian=(5,5), sigma_x=0, d=9, sigma_color=75, sigma_space=75, kernel_size_median=5):
@@ -109,7 +105,6 @@ class ImagesProcessing:
                 raise ValueError("Invalid filter type. Choose 'gaussian', 'median', or 'bilateral'.")
             filtered_images.append(filtered_img)
         self.images = filtered_images
-
 
 
     def apply_histogram_equalization(self, method='standard', clip_limit=2.0, grid_size=(8,8)):
@@ -157,15 +152,12 @@ class ImagesProcessing:
         self.images = [cv2.LUT(img, table) for img in self.images]
         
 
-
     def normalize_image(self):
         """
         Normalize pixel values of all images to the range [0, 1].
 
         """
         self.images = [img.astype(np.float32) / 255.0 for img in self.images]
-
-
 
 
     def find_best_preprocessing(self, feature_extraction_method, associated_filter, n_iter=50):
@@ -194,11 +186,23 @@ class ImagesProcessing:
             "bilateral": {"d": [5, 9, 12], "sigma_color": [50, 75, 100], "sigma_space": [50, 75, 100]},
             "median": {"kernel_size_median": [3, 5, 7]}
         }
+
+        # Just for testing the code faster
+        # filter_params = {
+        #     "gaussian": {"kernel_size_gaussian": [(3, 3)], "sigma_x": [0]},
+        #     "bilateral": {"d": [5], "sigma_color": [50], "sigma_space": [50]},
+        #     "median": {"kernel_size_median": [3]}
+        # }
         
         # Add "none" as an option to disable histogram equalization or gamma correction
         histogram_methods = ["none", "standard", "clahe"]
         gamma_values = ["none", 0.8, 1.0, 1.2, 1.5]
         normalization_options = [True, False]  # Whether to apply normalization or not
+
+        # Just for testing the code faster
+        # histogram_methods = ["standard"]
+        # gamma_values = [0.8]
+        # normalization_options = [False]
 
         # Generate all possible combinations of preprocessing parameters
         all_param_grid = list(itertools.product(
