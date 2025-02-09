@@ -3,12 +3,11 @@ from Features_extraction import feature_extraction_class as feature_extraction
 from Data_processing.images_processing_class import ImagesProcessing
 import pandas as pd
 
-def perform_classification(feature_extraction_method, method_name, df_Y, name_best_models, metrics_results_best_methods, best_params_method=None):
+def perform_classification(method_name, df_Y, 
+                           name_best_models, metrics_results_best_methods, best_params_method=None,
+                            feature_extraction_method=None, df_features=None):
     """
     Perform feature extraction, classification, and evaluation.
-
-    :param feature_extraction_method: Function to extract features from images.
-    :type feature_extraction_method: function
 
     :param method_name: Name of the feature extraction method.
     :type method_name: str
@@ -25,16 +24,23 @@ def perform_classification(feature_extraction_method, method_name, df_Y, name_be
     :param metrics_results_best_methods: Dictionary storing classification results.
     :type metrics_results_best_methods: dict
 
+    :param feature_extraction_method: Function to extract features from images.
+    :type feature_extraction_method: function
+
+    :param df_features: DataFrame containing features
+    :type df_features: pd.DataFrame
+
     :return: Updated dictionary with classification metrics for the best model.
     :rtype: dict
 
     """
 
     # Extract features
-    if best_params_method is None:
-        df_features = pd.DataFrame(feature_extraction_method())
-    else:
-        df_features = pd.DataFrame(feature_extraction_method(**best_params_method))
+    if df_features is None: # Possible to give directly features or to extract features
+        if best_params_method is None:
+            df_features = pd.DataFrame(feature_extraction_method())
+        else:
+            df_features = pd.DataFrame(feature_extraction_method(**best_params_method))
 
     print(f"Performing Classification for {method_name}")
 
