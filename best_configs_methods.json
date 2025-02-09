@@ -1,0 +1,19 @@
+{
+    "SIFT": {
+        "nOctaveLayers": 4,
+        "nfeatures": 500,
+        "num_clusters": 5,
+        "sigma": 1.6
+    },
+    "ORB": {
+        "nfeatures": 300,
+        "num_clusters": 5,
+        "scaleFactor": 1.2
+    },
+    "EDGE": {
+        "canny_threshold1": 50,
+        "canny_threshold2": 150,
+        "laplacian_ksize": 3,
+        "sobel_ksize": 3
+    }
+}

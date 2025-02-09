@@ -3,7 +3,7 @@ from Features_extraction import feature_extraction_class as feature_extraction
 from Data_processing.images_processing_class import ImagesProcessing
 import pandas as pd
 
-def perform_classification(feature_extraction_method, method_name, df_Y, name_best_models, metrics_results_best_methods):
+def perform_classification(feature_extraction_method, method_name, df_Y, name_best_models, metrics_results_best_methods, best_params_method=None):
     """
     Perform feature extraction, classification, and evaluation.
 
@@ -12,6 +12,9 @@ def perform_classification(feature_extraction_method, method_name, df_Y, name_be
 
     :param method_name: Name of the feature extraction method.
     :type method_name: str
+
+    :param best_params_method: parameters to use for the Feature Extraction method
+    :type best_params_method: dict
 
     :param df_Y: Dataframe containing labels for classification.
     :type df_Y: pd.DataFrame
@@ -28,7 +31,10 @@ def perform_classification(feature_extraction_method, method_name, df_Y, name_be
     """
 
     # Extract features
-    df_features = pd.DataFrame(feature_extraction_method())
+    if best_params_method is None:
+        df_features = pd.DataFrame(feature_extraction_method())
+    else:
+        df_features = pd.DataFrame(feature_extraction_method(**best_params_method))
 
     print(f"Performing Classification for {method_name}")
 

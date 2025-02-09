@@ -1,30 +1,59 @@
+import os
+import sys
 import cv2
 import numpy as np
 import pandas as pd
-from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
+
+from sklearn.cluster import KMeans
+from sklearn.model_selection import ParameterGrid
+
 from skimage.filters import prewitt, roberts, laplace, threshold_otsu, scharr
 from skimage.feature import local_binary_pattern
-import sys
-import os
 
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'Data_processing')))
-# import import_images as i
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'Classification')))
+from Classification import classification_class as classification
+
 
 class FeatureExtraction:
 
-    def __init__(self, images):
+    def __init__(self, imagesClass, metric="accuracy", average="binary"):
+        """Initialization of the class
+
+        :param imagesClass: object of class ImagesProcessing
+        :type imagesClass: ImagesProcessing
         
-        self.images = images
+        :param metric: metric to use in the class
+        :type metric: str, default="accuracy"
+
+        :param average: parameter average for f1-score, precision and recall
+        :type metric str, default="binary"
+        """
+        self.imagesClass = imagesClass
+        self.images = imagesClass.images
+        self.method_functions = {
+            'SIFT': self.method_SIFT,
+            'ORB':  self.method_ORB,
+            'EDGE': self.method_EDGE,
+            'Otsu': self.method_otsu,
+            'Adaptive': self.method_adaptive,
+            'Gabor': self.method_adaptive,
+            'LBP': self.method_LBP,
+        }
+        self.methods = {'SIFT', 'ORB', 'EDGE', 'Otsu', 'Adaptive', 'Gabor', 'LBP'}
+        # self.metric = metric # to be used eventually for choosing hyperparameters
+        # self.average = average
         
     # ===================================================================================================
     # 1. Interest points detection methods
         
-    def method_SIFT (self):
+    def method_SIFT (self, num_clusters=5, nfeatures=500, nOctaveLayers=3, sigma=1.6):
         print("============================================")
         print("\033[1mExtracting SIFT Features\033[0;0m")
         # 1. Extract SIFT features from all images
-        sift = cv2.SIFT_create()
+        sift = cv2.SIFT_create(nfeatures=nfeatures,
+                               nOctaveLayers=nOctaveLayers,
+                               sigma=sigma)
         descriptors_list = []
 
         for img in self.images:
@@ -49,7 +78,6 @@ class FeatureExtraction:
         all_descriptors = np.vstack(descriptors_list)
 
         # 3. Cluster descriptors using KMeans (BoVW approach)
-        num_clusters = 5
         kmeans = KMeans(n_clusters=num_clusters, random_state=42, n_init=10)
         kmeans.fit(all_descriptors)
 
@@ -66,11 +94,12 @@ class FeatureExtraction:
 
         return feature_vectors
 
-    def method_ORB(self):
+    def method_ORB(self, num_clusters=5, nfeatures=500, scaleFactor=1.2):
         print("============================================")
         print("\033[1mExtracting ORB Features\033[0;0m")
         # 1. Extract ORB features from all images
-        orb = cv2.ORB_create()
+        orb = cv2.ORB_create(nfeatures=nfeatures,
+                             scaleFactor=scaleFactor)
         descriptors_list = []
 
         for img in self.images:
@@ -91,7 +120,6 @@ class FeatureExtraction:
         all_descriptors = np.vstack(descriptors_list)
 
         # 3. Cluster descriptors using KMeans (BoVW approach)
-        num_clusters = 5
         kmeans = KMeans(n_clusters=num_clusters, random_state=42, n_init=10)
         kmeans.fit(all_descriptors)
 
@@ -113,7 +141,8 @@ class FeatureExtraction:
     # ===================================================================================================
     # 2. Edge extraction methods
 
-    def method_EDGE(self):
+    def method_EDGE(self, canny_threshold1=100, canny_threshold2=200,
+                    sobel_ksize=3, laplacian_ksize=3):
         """
         Extract edge detection features from a given list of images.
 
@@ -133,12 +162,18 @@ class FeatureExtraction:
             #gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
             
             # Apply different edge detection methods
-            otsu_thresh = threshold_otsu(gray)
-            edges_canny = cv2.Canny(gray, otsu_thresh * 0.5, otsu_thresh * 1.5)
-            sobelx = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
-            sobely = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
+            # otsu_thresh = threshold_otsu(gray)
+            # Canny
+            # edges_canny = cv2.Canny(gray, otsu_thresh * 0.5, otsu_thresh * 1.5)
+            edges_canny = cv2.Canny(gray, canny_threshold1, canny_threshold2)
+            
+            # Sobel
+            sobelx = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=sobel_ksize)
+            sobely = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=sobel_ksize)
+            
             prewitt_edges = prewitt(gray)
-            laplacian_edges = laplace(gray)
+            laplacian_edges = cv2.Laplacian(gray, cv2.CV_64F, ksize=laplacian_ksize)
+            # laplacian_edges = laplace(gray)
             roberts_edges = roberts(gray)
             scharrx = scharr(gray, axis=0)
             scharry = scharr(gray, axis=1)
@@ -178,3 +213,173 @@ class FeatureExtraction:
         features_df = (features_df - features_df.min()) / (features_df.max() - features_df.min())
         
         return features_df
+    
+
+    # ===================================================================================================
+
+    def method_otsu(self):
+
+        print("============================================")
+        print("\033[1mData Segmentation using Otsu's Thresholding\033[0;0m")
+        features_list = []
+
+        for img in self.images:
+            # Check if it is not already in grayscale
+            if len(img.shape) == 3 and img.shape[2] == 3:
+                gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+            else:
+                gray = img
+        
+            # Apply Otsu's Thresholding
+            _, binary_image = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)  
+            # Extract histogram features from binary image
+            hist = cv2.calcHist([binary_image], [0], None, [256], [0, 256])
+            # Normalize the histogram
+            hist = hist.flatten() / np.sum(hist)  
+            features_list.append(hist)
+
+
+        return features_list
+    
+    def method_adaptive(self):
+
+        print("============================================")
+        print("\033[1mData Segmentation using Adaptive's Thresholding\033[0;0m")
+        features_list = []
+
+        for img in self.images:
+            # Check if it is not already in grayscale
+            if len(img.shape) == 3 and img.shape[2] == 3:
+                gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+            else:
+                gray = img
+        
+            # Adaptive Thresholding (Gaussian)
+            adaptive_binary = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                                    cv2.THRESH_BINARY, 11, 2)
+            
+            hist_adaptive = cv2.calcHist([adaptive_binary], [0], None, [256], [0, 256]).flatten()
+            hist_adaptive = hist_adaptive / np.sum(hist_adaptive)
+
+            features_list.append(hist_adaptive)
+
+        return features_list
+    
+    
+    def method_Gabor(self, ksize=7, sigma=4.0, lambd=10.0, gamma=0.5):
+
+        print("============================================")
+        print("\033[1mExtracting Surface Textures Features using Gabor filters\033[0;0m")
+        features_list = []
+
+        for img in self.images:
+            # Check if it is not already in grayscale
+            if len(img.shape) == 3 and img.shape[2] == 3:
+                gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+            else:
+                gray = img
+        
+            # Define Gabor filter orientations
+            orientations = [0, np.pi/4, np.pi/2, 3*np.pi/4]
+            
+            features = []
+            for theta in orientations:
+                kernel = cv2.getGaborKernel((ksize, ksize), sigma, theta, lambd, gamma, 0, ktype=cv2.CV_32F)
+                filtered_img = cv2.filter2D(gray, cv2.CV_8UC3, kernel)  # Apply Gabor filter
+                
+                # Extract statistical features
+                mean_val = np.mean(filtered_img)
+                var_val = np.var(filtered_img)
+                energy = np.sum(filtered_img**2)
+
+                features.extend([mean_val, var_val, energy])
+
+            features_list.append(np.array(features))
+
+        return features_list
+
+    def method_LBP(self,radius=3, num_points=24):
+
+        print("============================================")
+        print("\033[1mExtracting Spatial Texture Features using LBP\033[0;0m")
+        features_list = []
+
+        for img in self.images:
+            # Check if it is not already in grayscale
+            if len(img.shape) == 3 and img.shape[2] == 3:
+                gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+            else:
+                gray = img
+        
+            # Compute LBP
+            lbp = local_binary_pattern(gray, num_points, radius, method="uniform")
+            
+            # Compute histogram of LBP
+            hist, _ = np.histogram(lbp.ravel(), bins=np.arange(0, num_points + 3), range=(0, num_points + 2))
+            
+            # Normalize histogram
+            hist = hist.astype("float")
+            hist /= (hist.sum() + 1e-6)  # Avoid division by zero
+
+            features_list.append(hist)
+
+        return features_list
+
+    def optimal_hyperparameters(self, methods=('SIFT', 'ORB', 'EDGE')):
+
+        hyperparameters = {
+            'SIFT': {
+                'num_clusters':      [5, 10],
+                'nfeatures':         [300, 500],
+                'nOctaveLayers':     [3, 4],
+                # 'contrastThreshold': [0.04, 0.06],
+                # 'edgeThreshold':     [10, 20],
+                'sigma':             [1.2, 1.6]
+            },
+            'ORB': {
+                'num_clusters':   [5, 10],
+                'nfeatures':      [300, 500],
+                'scaleFactor':    [1.2, 1.5],
+                # 'nlevels':        [8, 12],
+                # 'edgeThreshold':  [15, 31],
+                # 'fastThreshold':  [10, 20]
+            },
+            'EDGE': {
+                'canny_threshold1': [50, 100],
+                'canny_threshold2': [150, 200],
+                'sobel_ksize':      [3, 5],
+                'laplacian_ksize':  [3, 5]
+            }
+        }
+
+        best_configs = {m: [] for m in methods}
+        
+
+        for method in methods:
+
+            best_score=0
+            
+            func = self.method_functions[method]
+
+            param_grid = hyperparameters[method]
+            for params in ParameterGrid(param_grid):
+            
+                df_features =  pd.DataFrame(func(**params))
+
+                data_processed = classification.DataProcessing(df_features, pd.DataFrame(self.imagesClass.labels), stratified=False)
+                env_classifier = classification.BinaryClassification(data_processed, average="macro")
+
+                # Train and evaluate using Logistic Regression
+                metrics_results, _, _ = env_classifier.TrainTestLogisticRegression()
+
+                test_f1_score = metrics_results["f1-score"]["LogReg Test"][0]
+
+                # Compare
+                if test_f1_score > best_score:
+                    best_score = test_f1_score
+                    best_config = params
+
+
+            best_configs[method] = best_config
+                
+        return best_configs
