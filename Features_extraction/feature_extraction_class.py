@@ -227,4 +227,63 @@ class FeatureExtraction:
             features_list.append(hist_adaptive)
 
         return features_list
+    
+    
+    def method_Gabor(self, ksize=7, sigma=4.0, lambd=10.0, gamma=0.5):
 
+        print("============================================")
+        print("\033[1mExtracting Surface Textures Features using Gabor filters\033[0;0m")
+        features_list = []
+
+        for img in self.images:
+            # Check if it is not already in grayscale
+            if len(img.shape) == 3 and img.shape[2] == 3:
+                gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+            else:
+                gray = img
+        
+            # Define Gabor filter orientations
+            orientations = [0, np.pi/4, np.pi/2, 3*np.pi/4]
+            
+            features = []
+            for theta in orientations:
+                kernel = cv2.getGaborKernel((ksize, ksize), sigma, theta, lambd, gamma, 0, ktype=cv2.CV_32F)
+                filtered_img = cv2.filter2D(gray, cv2.CV_8UC3, kernel)  # Apply Gabor filter
+                
+                # Extract statistical features
+                mean_val = np.mean(filtered_img)
+                var_val = np.var(filtered_img)
+                energy = np.sum(filtered_img**2)
+
+                features.extend([mean_val, var_val, energy])
+
+            features_list.append(np.array(features))
+
+        return features_list
+
+    def method_LBP(self,radius=3, num_points=24):
+
+        print("============================================")
+        print("\033[1mExtracting Spatial Texture Features using LBP\033[0;0m")
+        features_list = []
+
+        for img in self.images:
+            # Check if it is not already in grayscale
+            if len(img.shape) == 3 and img.shape[2] == 3:
+                gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+            else:
+                gray = img
+        
+            # Compute LBP
+            lbp = local_binary_pattern(gray, num_points, radius, method="uniform")
+            
+            # Compute histogram of LBP
+            hist, _ = np.histogram(lbp.ravel(), bins=np.arange(0, num_points + 3), range=(0, num_points + 2))
+            
+            # Normalize histogram
+            hist = hist.astype("float")
+            hist /= (hist.sum() + 1e-6)  # Avoid division by zero
+
+            features_list.append(hist)
+
+        return features_list
