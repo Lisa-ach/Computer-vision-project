@@ -9,9 +9,9 @@
             0
         ],
         "histogram": "standard",
-        "gamma": 0.8,
-        "normalize": false,
-        "f1-score": 0.7926342950973493
+        "gamma": "none",
+        "normalize": true,
+        "f1-score": 0.804676279657609
     },
     "ORB": {
         "filter": "median",
@@ -31,8 +31,8 @@
             50
         ],
         "histogram": "standard",
-        "gamma": 0.8,
+        "gamma": 1.5,
         "normalize": false,
-        "f1-score": 0.8320987654320987
+        "f1-score": 0.8310749774164408
     }
 }
