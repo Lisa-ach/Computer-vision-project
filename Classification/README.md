@@ -1,0 +1,5 @@
+This folder contains code to perform Binary Classification. Indeed, the goal is to detect if images contain potholes (images labeled with 1) or not (images labeled with 0).
+
+The first file is the file **classification_class.py**. This file contains two classes: DataProcessing and BinaryClassification. The first class allows to perform processing on any dataset such as scaling or splitting into training, validation and testing sets. The second one allows to perform binary classification, and in particular Logistic Regression, Decision Tree Classification and Random Forest. Many methods are implemented in this class: they allow in particular to find the best hyperparameters through cross validation and compute diverse metrics. The features extracted using feature extraction methods will be compared thanks to this class.
+
+The second file is the file **CNN.ipynb**. It contains the implementation of a CNN applied directly to the images. A thorough search for its hyperparameters has not been done ; this model simply serves as a baseline for comparing our other traditional feature extraction methods.
