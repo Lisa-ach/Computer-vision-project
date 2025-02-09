@@ -178,3 +178,53 @@ class FeatureExtraction:
         features_df = (features_df - features_df.min()) / (features_df.max() - features_df.min())
         
         return features_df
+    
+
+    def method_otsu(self):
+
+        print("============================================")
+        print("\033[1mData Segmentation using Otsu's Thresholding\033[0;0m")
+        features_list = []
+
+        for img in self.images:
+            # Check if it is not already in grayscale
+            if len(img.shape) == 3 and img.shape[2] == 3:
+                gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+            else:
+                gray = img
+        
+            # Apply Otsu's Thresholding
+            _, binary_image = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)  
+            # Extract histogram features from binary image
+            hist = cv2.calcHist([binary_image], [0], None, [256], [0, 256])
+            # Normalize the histogram
+            hist = hist.flatten() / np.sum(hist)  
+            features_list.append(hist)
+
+
+        return features_list
+    
+    def method_adaptive(self):
+
+        print("============================================")
+        print("\033[1mData Segmentation using Adaptive's Thresholding\033[0;0m")
+        features_list = []
+
+        for img in self.images:
+            # Check if it is not already in grayscale
+            if len(img.shape) == 3 and img.shape[2] == 3:
+                gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+            else:
+                gray = img
+        
+            # Adaptive Thresholding (Gaussian)
+            adaptive_binary = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+                                                    cv2.THRESH_BINARY, 11, 2)
+            
+            hist_adaptive = cv2.calcHist([adaptive_binary], [0], None, [256], [0, 256]).flatten()
+            hist_adaptive = hist_adaptive / np.sum(hist_adaptive)
+
+            features_list.append(hist_adaptive)
+
+        return features_list
+
