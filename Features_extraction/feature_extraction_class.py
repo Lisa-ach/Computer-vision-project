@@ -38,7 +38,7 @@ class FeatureExtraction:
             'EDGE': self.method_EDGE,
             'Otsu': self.method_otsu,
             'Adaptive': self.method_adaptive,
-            'Gabor': self.method_adaptive,
+            'Gabor': self.method_Gabor,
             'LBP': self.method_LBP,
         }
         self.methods = {'SIFT', 'ORB', 'Harris', 'EDGE', 'Otsu', 'Adaptive', 'Gabor', 'LBP'}
@@ -393,7 +393,7 @@ class FeatureExtraction:
             },
             'Harris':{
                 'blockSize':[2,3],
-                'ksize':[3,4],
+                'ksize':[3,5],
                 'k':[0.04, 0.05],
                 'threshold':[0.01, 0.02]
             },
