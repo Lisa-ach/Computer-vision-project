@@ -70,7 +70,7 @@ def perform_classification(method_name, df_Y,
     # Store and return Metrics
     return env.get_metrics(models[best_method_name], method_name, metrics_results_best_methods)
 
-def best_preprocessing(i, feature_extraction_method, filter_name, method_name, n_iter=10):
+def best_preprocessing(i, feature_extraction_method, filter_name, method_name, n_iter=10, fixed_histogram_method=None):
     """
     Find the best preprocessing configuration for a given feature extraction method.
 
@@ -98,7 +98,8 @@ def best_preprocessing(i, feature_extraction_method, filter_name, method_name, n
     best_config, all_results = i.find_best_preprocessing(
         feature_extraction_method=feature_extraction_method,  
         associated_filter=filter_name,
-        n_iter=n_iter
+        n_iter=n_iter,
+        fixed_histogram_method=fixed_histogram_method
     )
 
     print(f"Best preprocessing configuration for {method_name}: {best_config}")
