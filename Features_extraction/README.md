@@ -43,9 +43,9 @@ The **Canny Edge Detector** is a popular method for detecting edges. It first ap
 
 The **Sobel operator** highlights edges by applying horizontal and vertical filters to detect changes in intensity. 
 
-The gradient magnitude is computed as $G=\sqrt{G_x^2+G_y^2}$ where $G_x$ and $G_y$ are gradients computed using Sobel kernels:
-$$
-G_x =
+The gradient magnitude is computed as $$G=\sqrt{G_x^2+G_y^2}$$ where $G_x$ and $G_y$ are gradients computed using Sobel kernels:
+
+$$G_x =
 \begin{bmatrix}
 -1 & 0 & 1 \\
 -2 & 0 & 2 \\
@@ -57,16 +57,15 @@ G_y =
 -1 & -2 & -1 \\
 0 & 0 & 0 \\
 1 & 2 & 1
-\end{bmatrix}
-$$
+\end{bmatrix}$$
 
 The Sobel operator is computationally **efficient and simple** but **sensitive to noise**, making it less reliable in high-noise environments.
 
 - **Prewitt Operator (1970)**
 
 The **Prewitt operator** is similar to Sobel but uses equal weights in the convolution kernels: 
-$$
-G_x =
+
+$$G_x =
 \begin{bmatrix}
 -1 & 0 & 1 \\
 -1 & 0 & 1 \\
@@ -78,15 +77,14 @@ G_y =
 -1 & -1 & -1 \\
 0 & 0 & 0 \\
 1 & 1 & 1
-\end{bmatrix}
-$$
+\end{bmatrix}$$
+
 It detects edges effectively but is slightly less accurate in identifying sharp intensity changes.
 
 - **Scharr Operator (2000)**
 
 The **Scharr operator** is an optimized version of Sobel that **reduces noise sensitivity** while maintaining sharp edge detection by improving **gradient estimation accuracy**. The convolution kernels are: 
-$$
-G_x =
+$$G_x =
 \begin{bmatrix}
 -3 & 0 & 3 \\
 -10 & 0 & 10 \\
@@ -98,16 +96,14 @@ G_y =
 3 & 10 & 3 \\
 0 & 0 & 0 \\
 -3 & -10 & -3
-\end{bmatrix}
-$$
+\end{bmatrix}$$
 
 
 - **Roberts Cross Operator (1963)**
 
 The **Roberts operator** detects edges by calculating the difference between diagonally adjacent pixels. 
 
-$$
-G_x =
+$$G_x =
 \begin{bmatrix}
 1 & 0 \\
 0 & -1
@@ -117,8 +113,7 @@ G_y =
 \begin{bmatrix}
 0 & 1  \\
 -1 & 0 
-\end{bmatrix}
-$$
+\end{bmatrix}$$
 
 It is **simple and fast** but not as precise as more advanced techniques due to its **high sensitive to noise**.
 
@@ -130,14 +125,13 @@ Second-derivative methods compute the **Laplacian**, which highlights regions of
 - **Laplacian Operator**
 
 The **Laplacian operator** detects edges by computing the **second derivative** of the image, which enhances areas of rapid intensity change. The Laplacian Kernel is:
-$$
-L =
+
+$$L =
 \begin{bmatrix}
 0 & 1 & 0 \\
 1 & -4 & 1 \\
 0 & 1 & 0 
-\end{bmatrix}
-$$
+\end{bmatrix}$$
 
 
 ## 3. Adaptive Edge Detection Techniques
