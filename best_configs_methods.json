@@ -21,5 +21,26 @@
         "canny_threshold2": 200,
         "laplacian_ksize": 3,
         "sobel_ksize": 5
+    },
+    "Adaptive": {
+        "C": 5,
+        "block_size": 9
+    },
+    "Gabor": {
+        "gamma": 1.0,
+        "ksize": 7,
+        "lambd": 5,
+        "sigma": 6
+    },
+    "LBP": {
+        "num_points": 24,
+        "radius": 2
+    },
+    "HOG": {
+        "orientations": 9,
+        "pixels_per_cell": [
+            32,
+            32
+        ]
     }
 }
