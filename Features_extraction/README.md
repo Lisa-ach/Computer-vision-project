@@ -43,7 +43,7 @@ The **Canny Edge Detector** is a popular method for detecting edges. It first ap
 
 The **Sobel operator** highlights edges by applying horizontal and vertical filters to detect changes in intensity. 
 
-The gradient magnitude is computed as $$G=\sqrt{G_x^2+G_y^2}$$ where $G_x$ and $G_y$ are gradients computed using Sobel kernels:
+The gradient magnitude is computed as $$ G=\sqrt{G_x^2+G_y^2} $$ where $G_x$ and $G_y$ are gradients computed using Sobel kernels:
 
 $$G_x =
 \begin{bmatrix}
@@ -84,6 +84,7 @@ It detects edges effectively but is slightly less accurate in identifying sharp 
 - **Scharr Operator (2000)**
 
 The **Scharr operator** is an optimized version of Sobel that **reduces noise sensitivity** while maintaining sharp edge detection by improving **gradient estimation accuracy**. The convolution kernels are: 
+
 $$G_x =
 \begin{bmatrix}
 -3 & 0 & 3 \\
