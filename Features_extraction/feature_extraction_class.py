@@ -10,6 +10,7 @@ from sklearn.model_selection import ParameterGrid
 
 from skimage.filters import prewitt, roberts, laplace, threshold_otsu, scharr
 from skimage.feature import local_binary_pattern
+from skimage.feature import hog
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'Classification')))
 from Classification import classification_class as classification
@@ -40,8 +41,9 @@ class FeatureExtraction:
             'Adaptive': self.method_adaptive,
             'Gabor': self.method_Gabor,
             'LBP': self.method_LBP,
+            'HOG': self.method_HOG,
         }
-        self.methods = {'SIFT', 'ORB', 'Harris', 'EDGE', 'Otsu', 'Adaptive', 'Gabor', 'LBP'}
+        self.methods = {'SIFT', 'ORB', 'Harris', 'EDGE', 'Otsu', 'Adaptive', 'Gabor', 'LBP','HOG'}
         # self.metric = metric # to be used eventually for choosing hyperparameters
         # self.average = average
         
@@ -288,7 +290,7 @@ class FeatureExtraction:
 
         return features_list
     
-    def method_adaptive(self):
+    def method_adaptive(self, block_size = 11, C = 2):
 
         print("============================================")
         print("\033[1mData Segmentation using Adaptive's Thresholding\033[0;0m")
@@ -303,7 +305,7 @@ class FeatureExtraction:
         
             # Adaptive Thresholding (Gaussian)
             adaptive_binary = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-                                                    cv2.THRESH_BINARY, 11, 2)
+                                                    cv2.THRESH_BINARY, block_size, C)
             
             hist_adaptive = cv2.calcHist([adaptive_binary], [0], None, [256], [0, 256]).flatten()
             hist_adaptive = hist_adaptive / np.sum(hist_adaptive)
@@ -371,8 +373,36 @@ class FeatureExtraction:
             features_list.append(hist)
 
         return features_list
+    
+    def method_HOG(self, orientations = 8, pixels_per_cell=(16, 16) ):
+        print("============================================")
+        print("\033[1mExtracting Structural Features using HOG\033[0;0m")
+        features_list = []
 
-    def optimal_hyperparameters(self, methods=('SIFT', 'ORB', "Harris", 'EDGE')):
+        for img in self.images:
+            # Check if it is not already in grayscale
+            if len(img.shape) == 3 and img.shape[2] == 3:
+                gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+            else:
+                gray = img
+
+            image = cv2.resize(img, (256, 256))
+
+            # Compute HOG features
+            hog_features = hog(image, 
+                            orientations= orientations, 
+                            pixels_per_cell=pixels_per_cell, 
+                            cells_per_block=(2, 2), 
+                            block_norm='L2-Hys', 
+                            visualize=False)
+            
+            features_list.append(hog_features)
+
+        return features_list
+            
+
+
+    def optimal_hyperparameters(self, methods=('SIFT', 'ORB', "Harris", 'EDGE', 'Adaptive', 'Gabor', 'LBP','HOG')):
 
         hyperparameters = {
             'SIFT': {
@@ -402,6 +432,29 @@ class FeatureExtraction:
                 'canny_threshold2': [150, 200],
                 'sobel_ksize':      [3, 5],
                 'laplacian_ksize':  [3, 5]
+            },
+            'Adaptive': {
+                'block_size': [9,11,15],
+                'C': [1,2,5]
+            },
+
+            'LBP':{
+                'radius':[1,2,3],
+                'num_points':[8,16,24],
+            },
+
+            'Gabor':{
+                'ksize':[7,15,21],
+                'sigma':[2,4,6],
+                'lambd':[5,10,15],
+                'gamma':[0.5,0.8,1.0]
+                
+            },
+
+            'HOG':{
+                'orientations':[6,8,9],
+                'pixels_per_cell':[(16,16),(32,32)]
+            
             }
         }
 
