@@ -10,6 +10,12 @@
         "num_clusters": 5,
         "scaleFactor": 1.5
     },
+    "Harris": {
+        "blockSize": 2,
+        "k": 0.04,
+        "ksize": 3,
+        "threshold": 0.01
+    },
     "EDGE": {
         "canny_threshold1": 100,
         "canny_threshold2": 200,
