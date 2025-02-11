@@ -6,7 +6,7 @@ Interest point detection algorithms focus on finding distinctive points that are
 
 - **SIFT (Scale-Invariant Feature Transform), 1999**
 
-SIFT first applies a convolution to all the images, with different Gaussian kernels, using different scales $\sigma_n = k^n \sigma_0$ (usuallly $k=\sqrt{2}$). If $I(x,y)$ is the original image and $G(x,y,\sigma)$ is the Gaussian function, then the blurred version of the image can be thus defined as:
+SIFT first applies a convolution to all the images, with different Gaussian kernels, using different scales $\sigma_n = k^n \sigma_0$ (usually $k=\sqrt{2}$). If $I(x,y)$ is the original image and $G(x,y,\sigma)$ is the Gaussian function, then the blurred version of the image can be thus defined as:
 
 $$L(x,y,\sigma) = G(x,y,\sigma) * I(x,y)$$
 

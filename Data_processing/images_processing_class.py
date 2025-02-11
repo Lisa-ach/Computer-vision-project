@@ -160,7 +160,7 @@ class ImagesProcessing:
         self.images = [img.astype(np.float32) / 255.0 for img in self.images]
 
 
-    def find_best_preprocessing(self, feature_extraction_method, associated_filter, n_iter=50):
+    def find_best_preprocessing(self, feature_extraction_method, associated_filter, n_iter=50, fixed_histogram_method=None):
         """
         Finds the best preprocessing configuration for a given feature extraction method and its associated image filter.
         
@@ -169,9 +169,12 @@ class ImagesProcessing:
         
         :param associated_filter: The filter to apply before feature extraction ('gaussian', 'bilateral' or 'median').
         :type associated_filter: str
-        
-        :param classifier: An instance of the BinaryClassification class.
-        :type classifier: BinaryClassification
+
+        :param n_iter: Number of iterations to test different preprocessing configurations.
+        :type n_iter: int, default=50
+
+        :param fixed_histogram_method: If it is chosen, it allows to fix a specific histogram equalization method ('standard', 'clahe', or 'none').
+        :type fixed_histogram_method: str, optional
         
         :return: 
             - best_config (dict): The best preprocessing configuration with its hyperparameters and performance.
@@ -187,16 +190,19 @@ class ImagesProcessing:
             "median": {"kernel_size_median": [3, 5, 7]}
         }
         
-        # Add "none" as an option to disable histogram equalization or gamma correction
-        histogram_methods = ["none", "standard", "clahe"]
-        # gamma_values = ["none", 0.8, 1.0, 1.2, 1.5]
+        # If histogram equalization is fixed, we use only this value
+        if fixed_histogram_method:
+            histogram_methods = [fixed_histogram_method]
+        else:
+            # Add "none" as an option to disable histogram equalization
+            histogram_methods = ["none", "standard", "clahe"]
+        
         normalization_options = [True, False]  # Whether to apply normalization or not
 
         # Generate all possible combinations of preprocessing parameters
         all_param_grid = list(itertools.product(
             [tuple(v) for v in zip(*filter_params[associated_filter].values())],  # Regrouper les params du filtre
             histogram_methods,
-            # gamma_values,
             normalization_options
         ))
         
@@ -223,10 +229,6 @@ class ImagesProcessing:
             # Apply histogram equalization only if selected
             if hist_method != "none":
                 self.apply_histogram_equalization(method=hist_method)
-
-            # Apply gamma correction only if selected
-            # if gamma != "none":
-            #     self.apply_gamma_correction(gamma=gamma)
 
             # Apply normalization only if selected
             if normalize:
@@ -256,7 +258,6 @@ class ImagesProcessing:
                 "filter": associated_filter,
                 "filter_params": param_values,
                 "histogram": hist_method,
-                # "gamma": gamma,
                 "normalize": normalize,
                 "f1-score": test_f1_score
             }
@@ -301,10 +302,6 @@ class ImagesProcessing:
         if "histogram" in config and config["histogram"] != "none":
             # Use either standard histogram equalization or CLAHE (adaptive histogram equalization)
             self.apply_histogram_equalization(method=config["histogram"])
-
-        # Apply gamma correction if a gamma value is provided (not "none")
-        if "gamma" in config and config["gamma"] != "none":
-            self.apply_gamma_correction(gamma=config["gamma"])
 
         # Apply normalization if specified in the configuration
         if "normalize" in config and config["normalize"]:
