@@ -1,27 +1,36 @@
 {
     "SIFT": {
-        "filter": "gaussian",
+        "filter": "bilateral",
         "filter_params": [
-            [
-                3,
-                3
-            ],
-            0
+            12,
+            100,
+            100
         ],
-        "histogram": "standard",
-        "gamma": "none",
-        "normalize": true,
+        "histogram": "clahe",
+        "normalize": false,
         "f1-score": 0.804676279657609
     },
     "ORB": {
-        "filter": "median",
+        "filter": "bilateral",
         "filter_params": [
-            3
+            12,
+            100,
+            100
         ],
-        "histogram": "standard",
-        "gamma": 0.8,
+        "histogram": "none",
         "normalize": false,
         "f1-score": 0.5966649879693358
+    },
+    "Harris": {
+        "filter": "bilateral",
+        "filter_params": [
+            12,
+            100,
+            100
+        ],
+        "histogram": "standard",
+        "normalize": true,
+        "f1-score": 0.7614035087719299
     },
     "EDGE": {
         "filter": "bilateral",
@@ -30,9 +39,8 @@
             50,
             50
         ],
-        "histogram": "standard",
-        "gamma": 1.5,
-        "normalize": false,
+        "histogram": "clahe",
+        "normalize": true,
         "f1-score": 0.8310749774164408
     }
 }
