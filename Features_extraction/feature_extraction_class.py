@@ -34,13 +34,14 @@ class FeatureExtraction:
         self.method_functions = {
             'SIFT': self.method_SIFT,
             'ORB':  self.method_ORB,
+            'Harris' : self.method_Harris,
             'EDGE': self.method_EDGE,
             'Otsu': self.method_otsu,
             'Adaptive': self.method_adaptive,
             'Gabor': self.method_adaptive,
             'LBP': self.method_LBP,
         }
-        self.methods = {'SIFT', 'ORB', 'EDGE', 'Otsu', 'Adaptive', 'Gabor', 'LBP'}
+        self.methods = {'SIFT', 'ORB', 'Harris', 'EDGE', 'Otsu', 'Adaptive', 'Gabor', 'LBP'}
         # self.metric = metric # to be used eventually for choosing hyperparameters
         # self.average = average
         
@@ -138,6 +139,52 @@ class FeatureExtraction:
 
         return feature_vectors
     
+    def method_Harris(self, blockSize=2, ksize=3, k=0.04, threshold=0.01):
+        print("============================================")
+        print("\033[1mExtracting Harris Corner Features\033[0;0m")
+        features_list = []
+        
+        for img in self.images:
+            # Check if the image is not already in grayscale
+            if len(img.shape) == 3 and img.shape[2] == 3:
+                gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            else:
+                gray = img
+            # Convert image to float32 as required by cv2.cornerHarris
+            gray = np.float32(gray)
+            # Apply Harris Corner Detection
+            dst = cv2.cornerHarris(gray, blockSize, ksize, k)
+            # Dilate to mark the corners
+            dst = cv2.dilate(dst, None)
+            # Threshold to detect strong corners
+            corner_mask = dst > threshold * dst.max()
+            
+            # Compute features:
+            # - count of corners
+            # - mean and standard deviation of corner responses
+            # - mean and standard deviation of the corner positions (x and y)
+            count = np.sum(corner_mask)
+            if count > 0:
+                indices = np.argwhere(corner_mask)
+                responses = dst[corner_mask]
+                mean_response = np.mean(responses)
+                std_response = np.std(responses)
+                mean_x = np.mean(indices[:, 1])  # x coordinate (column index)
+                std_x = np.std(indices[:, 1])
+                mean_y = np.mean(indices[:, 0])  # y coordinate (row index)
+                std_y = np.std(indices[:, 0])
+            else:
+                mean_response = 0
+                std_response = 0
+                mean_x = 0
+                std_x = 0
+                mean_y = 0
+                std_y = 0
+            
+            features_list.append([count, mean_response, std_response, mean_x, std_x, mean_y, std_y])
+        
+        return features_list
+
     # ===================================================================================================
     # 2. Edge extraction methods
 
@@ -325,7 +372,7 @@ class FeatureExtraction:
 
         return features_list
 
-    def optimal_hyperparameters(self, methods=('SIFT', 'ORB', 'EDGE')):
+    def optimal_hyperparameters(self, methods=('SIFT', 'ORB', "Harris", 'EDGE')):
 
         hyperparameters = {
             'SIFT': {
@@ -344,6 +391,12 @@ class FeatureExtraction:
                 # 'edgeThreshold':  [15, 31],
                 # 'fastThreshold':  [10, 20]
             },
+            'Harris':{
+                'blockSize':[2,3],
+                'ksize':[3,4],
+                'k':[0.04, 0.05],
+                'threshold':[0.01, 0.02]
+            },
             'EDGE': {
                 'canny_threshold1': [50, 100],
                 'canny_threshold2': [150, 200],
@@ -354,7 +407,6 @@ class FeatureExtraction:
 
         best_configs = {m: [] for m in methods}
         
-
         for method in methods:
 
             best_score=0
