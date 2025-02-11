@@ -43,7 +43,7 @@ The **Canny Edge Detector** is a popular method for detecting edges. It first ap
 
 The **Sobel operator** highlights edges by applying horizontal and vertical filters to detect changes in intensity. 
 
-The gradient magnitude is computed as $$ G=\sqrt{G_x^2+G_y^2} $$ where $G_x$ and $G_y$ are gradients computed using Sobel kernels:
+The gradient magnitude is computed as $$G=\sqrt{G_x^2+G_y^2}$$ where $G_x$ and $G_y$ are gradients computed using Sobel kernels:
 
 $$G_x =
 \begin{bmatrix}
