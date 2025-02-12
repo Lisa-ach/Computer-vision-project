@@ -16,38 +16,38 @@
         {
             "filter": "bilateral",
             "filter_params": [
-                9,
-                75,
-                75
+                5,
+                50,
+                50
             ],
-            "histogram": "none",
+            "histogram": "standard",
             "normalize": false,
-            "f1-score": 0.6053571428571429
+            "f1-score": 0.5966649879693358
         }
     ],
     "Harris": [
         {
             "filter": "bilateral",
             "filter_params": [
-                5,
-                50,
-                50
+                12,
+                100,
+                100
             ],
-            "histogram": "clahe",
-            "normalize": true,
-            "f1-score": 0.7614035087719297
+            "histogram": "standard",
+            "normalize": false,
+            "f1-score": 0.7614035087719299
         }
     ],
     "EDGE": [
         {
             "filter": "bilateral",
             "filter_params": [
-                9,
-                75,
-                75
+                12,
+                100,
+                100
             ],
-            "histogram": "standard",
-            "normalize": false,
+            "histogram": "none",
+            "normalize": true,
             "f1-score": 0.8310749774164408
         }
     ],
@@ -62,7 +62,7 @@
                 2
             ],
             "histogram": "clahe",
-            "normalize": true,
+            "normalize": false,
             "f1-score": 0.7933247031012551
         }
     ],
@@ -70,12 +70,12 @@
         {
             "filter": "bilateral",
             "filter_params": [
-                12,
-                100,
-                100
+                9,
+                75,
+                75
             ],
-            "histogram": "none",
-            "normalize": true,
+            "histogram": "standard",
+            "normalize": false,
             "f1-score": 0.5748937234308578
         }
     ],
@@ -84,27 +84,42 @@
             "filter": "gaussian",
             "filter_params": [
                 [
-                    7,
-                    7
+                    3,
+                    3
                 ],
-                2
+                0
             ],
-            "histogram": "clahe",
+            "histogram": "standard",
             "normalize": true,
-            "f1-score": 0.6908388270061377
+            "f1-score": 0.6908388270061376
         }
     ],
     "adaptive": [
         {
             "filter": "bilateral",
             "filter_params": [
-                5,
-                50,
-                50
+                9,
+                75,
+                75
             ],
-            "histogram": "none",
+            "histogram": "standard",
             "normalize": true,
             "f1-score": 0.6029411764705882
+        }
+    ],
+    "HOG": [
+        {
+            "filter": "gaussian",
+            "filter_params": [
+                [
+                    3,
+                    3
+                ],
+                0
+            ],
+            "histogram": "standard",
+            "normalize": true,
+            "f1-score": 0.8216393442622951
         }
     ]
 }
