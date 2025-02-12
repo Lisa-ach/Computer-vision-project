@@ -37,7 +37,7 @@
         "radius": 2
     },
     "HOG": {
-        "orientations": 9,
+        "orientations": 6,
         "pixels_per_cell": [
             32,
             32
