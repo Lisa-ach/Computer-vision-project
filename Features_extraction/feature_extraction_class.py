@@ -15,7 +15,6 @@ from skimage.feature import hog
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'Classification')))
 from Classification import classification_class as classification
 
-
 class FeatureExtraction:
 
     def __init__(self, imagesClass, metric="accuracy", average="binary"):
@@ -51,6 +50,23 @@ class FeatureExtraction:
     # 1. Interest points detection methods
         
     def method_SIFT (self, num_clusters=5, nfeatures=500, nOctaveLayers=3, sigma=1.6):
+        """Applies the Scale-Invariant Feature Transform (SIFT) algorithm for feature detection and description.
+
+        :param num_clusters: Number of clusters to use for feature clustering
+        :type num_clusters: int, default=5
+
+        :param nfeatures: The number of best features to retain
+        :type nfeatures: int, default=500
+
+        :param nOctaveLayers: The number of layers in each octave. Increasing this improves feature detection at different scales but increases computation time.
+        :type nOctaveLayers: int, default=3
+
+        :param sigma: The standard deviation of the Gaussian applied in the first octave. Higher values result in more robust features but may reduce localization accuracy.
+        :type sigma: float, default=1.6
+
+        :return: feature descriptors
+        :rtype: list
+        """
         print("============================================")
         print("\033[1mExtracting SIFT Features\033[0;0m")
         # 1. Extract SIFT features from all images
@@ -98,6 +114,21 @@ class FeatureExtraction:
         return feature_vectors
 
     def method_ORB(self, num_clusters=5, nfeatures=500, scaleFactor=1.2):
+        """Applies the Oriented FAST and Rotated BRIEF (ORB) algorithm for feature detection and description.
+
+        :param num_clusters: Number of clusters to use for feature grouping or clustering (if applicable).
+        :type num_clusters: int, default=5
+
+        :param nfeatures: The number of best features to retain. If set to 0, all detected features are kept.
+        :type nfeatures: int, default=500
+
+        :param scaleFactor: Pyramid decimation ratio, controlling how much the image is downscaled at each layer. 
+                            A value greater than 1.0 makes feature detection more robust to scale variations.
+        :type scaleFactor: float, default=1.2
+
+        :return: feature descriptors
+        :rtype: list
+        """
         print("============================================")
         print("\033[1mExtracting ORB Features\033[0;0m")
         # 1. Extract ORB features from all images
@@ -142,6 +173,24 @@ class FeatureExtraction:
         return feature_vectors
     
     def method_Harris(self, blockSize=2, ksize=3, k=0.04, threshold=0.01):
+        """Applies the Harris Corner Detection algorithm to identify corner-like features in an image.
+
+        :param blockSize: The size of the neighborhood considered for corner detection. Larger values consider more surrounding pixels.
+        :type blockSize: int, default=2
+
+        :param ksize: Aperture parameter for the Sobel operator used to compute image gradients. Typically an odd number (e.g., 3, 5, 7).
+        :type ksize: int, default=3
+
+        :param k: Harris detector free parameter, used in the corner response function.
+        :type k: float, default=0.04
+
+        :param threshold: Threshold for filtering weak corner responses.
+        :type threshold: float, default=0.01
+
+        :return: features
+        :rtype: list
+        """
+
         print("============================================")
         print("\033[1mExtracting Harris Corner Features\033[0;0m")
         features_list = []
@@ -192,11 +241,23 @@ class FeatureExtraction:
 
     def method_EDGE(self, canny_threshold1=100, canny_threshold2=200,
                     sobel_ksize=3, laplacian_ksize=3):
-        """
-        Extract edge detection features from a given list of images.
+        """Applies edge detection using Canny, Sobel, and Laplacian operators.
 
-        Returns:
-        pd.DataFrame: DataFrame containing extracted edge detection features.
+        :param canny_threshold1: Lower threshold for the Canny edge detection algorithm. Edges with gradient values below this are rejected.
+        :type canny_threshold1: int, default=100
+
+        :param canny_threshold2: Upper threshold for the Canny edge detection algorithm. Edges with gradient values above this are considered strong edges.
+        :type canny_threshold2: int, default=200
+
+        :param sobel_ksize: Aperture size for the Sobel operator. Must be an odd number (e.g., 3, 5, 7).
+        :type sobel_ksize: int, default=3
+
+        :param laplacian_ksize: Aperture size for the Laplacian operator, controlling the level of smoothing applied.
+        :type laplacian_ksize: int, default=3
+
+        :return: DataFrame containing extracted edge detection features.
+        :rtype: pd.DataFrame
+
         """
         print("============================================")
         print("\033[1mExtracting Edge features\033[0;0m")
@@ -267,6 +328,14 @@ class FeatureExtraction:
     # ===================================================================================================
 
     def method_otsu(self):
+        """Applies Otsu's Thresholding for image segmentation.
+
+        Otsu's method determines an optimal global threshold by minimizing intra-class variance,
+        effectively separating foreground and background.
+
+        :return: A list of normalized histogram features extracted from the binarized images.
+        :rtype: list of numpy.ndarray
+        """
 
         print("============================================")
         print("\033[1mData Segmentation using Otsu's Thresholding\033[0;0m")
@@ -287,10 +356,20 @@ class FeatureExtraction:
             hist = hist.flatten() / np.sum(hist)  
             features_list.append(hist)
 
-
         return features_list
     
     def method_adaptive(self, block_size = 11, C = 2):
+        """Applies Adaptive Gaussian Thresholding for image segmentation.
+
+        :param block_size: Size of the neighborhood region used to compute the local threshold. Must be an odd integer (e.g., 11, 15, 21).
+        :type block_size: int, default=11
+
+        :param C: Constant subtracted from the mean to fine-tune the threshold.
+        :type C: int, default=2
+
+        :return: A list of normalized histogram features extracted from adaptively thresholded images.
+        :rtype: list of numpy.ndarray
+        """
 
         print("============================================")
         print("\033[1mData Segmentation using Adaptive's Thresholding\033[0;0m")
@@ -316,6 +395,23 @@ class FeatureExtraction:
     
     
     def method_Gabor(self, ksize=7, sigma=4.0, lambd=10.0, gamma=0.5):
+        """Applies Gabor filters for texture analysis.
+
+        :param ksize: Size of the Gabor kernel (must be an odd number).
+        :type ksize: int, default=7
+
+        :param sigma: Standard deviation of the Gaussian envelope.
+        :type sigma: float, default=4.0
+
+        :param lambd: Wavelength of the sinusoidal factor.
+        :type lambd: float, default=10.0
+
+        :param gamma: Spatial aspect ratio, controlling the filter's elongation.
+        :type gamma: float, default=0.5
+
+        :return: A list of extracted statistical texture features for each image.
+        :rtype: list of numpy.ndarray
+        """
 
         print("============================================")
         print("\033[1mExtracting Surface Textures Features using Gabor filters\033[0;0m")
@@ -347,7 +443,18 @@ class FeatureExtraction:
 
         return features_list
 
-    def method_LBP(self,radius=3, num_points=24):
+    def method_LBP(self, radius=3, num_points=24):
+        """Extracts texture features using Local Binary Patterns (LBP).
+
+        :param radius: Radius of the circular neighborhood used for LBP computation.
+        :type radius: int, default=3
+
+        :param num_points: Number of neighboring pixels sampled in the circular pattern.
+        :type num_points: int, default=24
+
+        :return: A list of normalized histogram features extracted from LBP images.
+        :rtype: list of numpy.ndarray
+        """
 
         print("============================================")
         print("\033[1mExtracting Spatial Texture Features using LBP\033[0;0m")
@@ -374,7 +481,19 @@ class FeatureExtraction:
 
         return features_list
     
-    def method_HOG(self, orientations = 8, pixels_per_cell=(16, 16) ):
+    def method_HOG(self, orientations = 6, pixels_per_cell=(32,32)):
+        """Extracts shape and structural features using Histogram of Oriented Gradients (HOG).
+
+        :param orientations: Number of orientation bins for the histogram.
+        :type orientations: int, default=6
+
+        :param pixels_per_cell: Size of each cell for gradient computation (width, height).
+        :type pixels_per_cell: tuple, default=(32, 32)
+
+        :return: A list of HOG feature vectors for each image.
+        :rtype: list of numpy.ndarray
+        """
+        
         print("============================================")
         print("\033[1mExtracting Structural Features using HOG\033[0;0m")
         features_list = []
@@ -386,7 +505,7 @@ class FeatureExtraction:
             else:
                 gray = img
 
-            image = cv2.resize(img, (256, 256))
+            image = cv2.resize(gray, (256, 256))
 
             # Compute HOG features
             hog_features = hog(image, 
@@ -401,8 +520,16 @@ class FeatureExtraction:
         return features_list
             
 
-
     def optimal_hyperparameters(self, methods=('SIFT', 'ORB', "Harris", 'EDGE', 'Adaptive', 'Gabor', 'LBP','HOG')):
+        """Tests multiple hyperparameters
+
+        :param methods: methods to find the optimal hyperparameters
+        :type methods: dict, methods=('SIFT', 'ORB', "Harris", 'EDGE', 'Adaptive', 'Gabor', 'LBP','HOG')
+
+        :return: A dictionary containing each optimal configuration for each Feature Extraction method
+        :rtype: dict
+
+        """
 
         hyperparameters = {
             'SIFT': {
@@ -452,8 +579,8 @@ class FeatureExtraction:
             },
 
             'HOG':{
-                'orientations':[6,8,9],
-                'pixels_per_cell':[(16,16),(32,32)]
+                'orientations':[5,6],
+                'pixels_per_cell':[(32,32)]
             
             }
         }
