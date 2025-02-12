@@ -1,5 +1,5 @@
 {
-    "SIFT": [
+    "SIFT": 
         {
             "filter": "bilateral",
             "filter_params": [
@@ -10,9 +10,8 @@
             "histogram": "clahe",
             "normalize": false,
             "f1-score": 0.804676279657609
-        }
-    ],
-    "ORB": [
+        } ,
+    "ORB":
         {
             "filter": "bilateral",
             "filter_params": [
@@ -23,9 +22,8 @@
             "histogram": "standard",
             "normalize": false,
             "f1-score": 0.5966649879693358
-        }
-    ],
-    "Harris": [
+        },
+    "Harris":
         {
             "filter": "bilateral",
             "filter_params": [
@@ -36,9 +34,8 @@
             "histogram": "standard",
             "normalize": false,
             "f1-score": 0.7614035087719299
-        }
-    ],
-    "EDGE": [
+        },
+    "EDGE":
         {
             "filter": "bilateral",
             "filter_params": [
@@ -49,9 +46,8 @@
             "histogram": "none",
             "normalize": true,
             "f1-score": 0.8310749774164408
-        }
-    ],
-    "LBP": [
+        },
+    "LBP":
         {
             "filter": "gaussian",
             "filter_params": [
@@ -64,9 +60,8 @@
             "histogram": "clahe",
             "normalize": false,
             "f1-score": 0.7933247031012551
-        }
-    ],
-    "Gabor": [
+        },
+    "Gabor":
         {
             "filter": "bilateral",
             "filter_params": [
@@ -77,9 +72,8 @@
             "histogram": "standard",
             "normalize": false,
             "f1-score": 0.5748937234308578
-        }
-    ],
-    "otsu": [
+        },
+    "otsu":
         {
             "filter": "gaussian",
             "filter_params": [
@@ -92,9 +86,8 @@
             "histogram": "standard",
             "normalize": true,
             "f1-score": 0.6908388270061376
-        }
-    ],
-    "adaptive": [
+        },
+    "adaptive":
         {
             "filter": "bilateral",
             "filter_params": [
@@ -105,9 +98,8 @@
             "histogram": "standard",
             "normalize": true,
             "f1-score": 0.6029411764705882
-        }
-    ],
-    "HOG": [
+        },
+    "HOG":
         {
             "filter": "gaussian",
             "filter_params": [
@@ -121,5 +113,4 @@
             "normalize": true,
             "f1-score": 0.8216393442622951
         }
-    ]
 }
