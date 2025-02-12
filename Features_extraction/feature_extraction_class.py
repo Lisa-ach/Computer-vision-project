@@ -93,23 +93,7 @@ class FeatureExtraction:
                 # plt.title(f"SIFT Features ({len(keypoints)} Keypoints)")
                 # plt.show()
 
-        # 2. Stack all descriptors for clustering (BoVW)
-        all_descriptors = np.vstack(descriptors_list)
-
-        # 3. Cluster descriptors using KMeans (BoVW approach)
-        kmeans = KMeans(n_clusters=num_clusters, random_state=42, n_init=10)
-        kmeans.fit(all_descriptors)
-
-        # 4. Create feature histograms for each image
-        def extract_features(image_descriptors, kmeans_model, num_clusters):
-            feature_histogram = np.zeros(num_clusters)
-            if image_descriptors is not None:
-                labels = kmeans_model.predict(image_descriptors)
-                for label in labels:
-                    feature_histogram[label] += 1
-            return feature_histogram
-
-        feature_vectors = [extract_features(desc, kmeans, num_clusters) for desc in descriptors_list]
+        feature_vectors = self.BoW(descriptors_list, num_clusters=5)
 
         return feature_vectors
 
@@ -149,26 +133,7 @@ class FeatureExtraction:
            
             descriptors_list.append(descriptors)
 
-        # 2. Stack all descriptors for clustering (BoVW)
-        non_empty_descriptors = [desc for desc in descriptors_list if desc.shape[0] > 0] # remove zeros vectors
-        all_descriptors = np.vstack(descriptors_list)
-
-        # 3. Cluster descriptors using KMeans (BoVW approach)
-        kmeans = KMeans(n_clusters=num_clusters, random_state=42, n_init=10)
-        kmeans.fit(all_descriptors)
-
-        feature_vectors = []
-        for desc in descriptors_list:
-            if desc.shape[0] == 0:
-                # Image without descriptors => null histogram
-                feature_histogram = np.zeros(num_clusters, dtype=np.float32)
-            else:
-                labels = kmeans.predict(desc)
-                feature_histogram = np.zeros(num_clusters, dtype=np.float32)
-                for label in labels:
-                    feature_histogram[label] += 1
-            
-            feature_vectors.append(feature_histogram)
+        feature_vectors = self.BoW(descriptors_list, num_clusters=5)
 
         return feature_vectors
     
@@ -519,6 +484,52 @@ class FeatureExtraction:
 
         return features_list
             
+    def concatenate_features(self, features):
+        """Concatenates features.
+
+        :param features: list 
+        :type features: list of DataFrames
+
+        :return: concatenated features
+        :rtype: pd.DataFrame
+        """
+        return pd.concat(features, axis=1)
+    
+    def BoW(self, descriptors_list, num_clusters=5):
+        """Extracts shape and structural features using Histogram of Oriented Gradients (HOG).
+
+        :param descriptors_list: list of descriptors
+        :type descriptors_list: list
+
+        :param num_clusters: Number of clusters to use for feature clustering
+        :type num_clusters: int, default=5
+
+        :return: feature descriptors
+        :rtype: list
+        """
+
+        # Stack descriptors
+        non_empty_descriptors = [desc for desc in descriptors_list if desc.shape[0] > 0] # remove zeros vectors
+        all_descriptors = np.vstack(descriptors_list)
+
+        # Clustering descriptors using KMeans (BoW approach)
+        kmeans = KMeans(n_clusters=num_clusters, random_state=42, n_init=10)
+        kmeans.fit(all_descriptors)
+
+        feature_vectors = []
+        for desc in descriptors_list:
+            if desc.shape[0] == 0:
+                # Image without descriptors => null histogram
+                feature_histogram = np.zeros(num_clusters, dtype=np.float32)
+            else:
+                labels = kmeans.predict(desc)
+                feature_histogram = np.zeros(num_clusters, dtype=np.float32)
+                for label in labels:
+                    feature_histogram[label] += 1
+            
+            feature_vectors.append(feature_histogram)
+
+        return feature_vectors
 
     def optimal_hyperparameters(self, methods=('SIFT', 'ORB', "Harris", 'EDGE', 'Adaptive', 'Gabor', 'LBP','HOG')):
         """Tests multiple hyperparameters
