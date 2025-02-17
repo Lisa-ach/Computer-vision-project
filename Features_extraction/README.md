@@ -1,6 +1,12 @@
-Multiple feature extraction algorithms are used.
+Multiple feature extraction algorithms are used. Their implementation can be found in the class FeatureExtraction of the file *feature_extraction_class.py*. The file *feature_extraction.ipynb* allows to find the best hyperparameters for each method.
 
-# I. Interest point detection algorithms
+The methods used can be listed as follows.
+
+# I. Low-Level Features
+
+Low-Level Feature Extraction techniques focus on basic image characteristics like **edges, corners, or points of interest.**
+
+## 1. Interest point detection algorithms
 
 Interest point detection algorithms focus on finding distinctive points that are easy to match across images.
 
@@ -27,11 +33,11 @@ The $16 \times 16$ grid is divided into 16 smaller $4 \times 4$ cells so that ea
 
 ORB is a fast and free **alternative to SIFT and SURF**. It uses the **FAST algorithm** to detect keypoints. FAST identifies corners by analyzing around each pixel a small circular neighborhood of 16 pixels. If $N$ ($N = 9$ typically) contiguous pixels in the circle are all darker or brighter by a threshold compared to a pixel, then the pixel is considered a corner. FAST is efficient as instead of checking all pixels in the circle, it first checks if 4 of these pixels meet the condition, and if it is the case, the entire circle is checked.
 
-# II. Edge detection algorithms
+## 2. Edge detection algorithms
 
 Edge detection algorithms focus on identifying object boundaries where there are significant changes in intensity. These methods help extract key features from images. Edge detection can be divided into **gradient-based methods** and **second derivative methods**.
 
-## 1. Gradient-Based Edge Detectors
+### a) Gradient-Based Edge Detectors
 
 Gradient-based methods compute the **first derivative** of the image to detect areas of high intensity change. They are **effective at finding edges** but tend to be **sensitive to noise**.
 
@@ -119,7 +125,7 @@ G_y =
 It is **simple and fast** but not as precise as more advanced techniques due to its **high sensitive to noise**.
 
 
-## 2. Second-Derivative Edge Detectors
+### b) Second-Derivative Edge Detectors
 
 Second-derivative methods compute the **Laplacian**, which highlights regions of **rapid intensity change.**
 
@@ -135,7 +141,7 @@ $$L =
 \end{bmatrix}$$
 
 
-## 3. Adaptive Edge Detection Techniques
+### c) Adaptive Edge Detection Techniques
 
 These methods adapt thresholding techniques to improve edge detection in complex scenarios.
 
@@ -159,6 +165,29 @@ LBP is used for texture-based edge analysis. It encodes pixel intensity variatio
 | **Adaptive Thresholding** | Adaptive   | Works on uneven lighting                     | Hard to tune parameters                   |
 | **Local Binary Patterns (LBP)** | Texture-Based | Effective for texture analysis, robust to illumination changes | Not ideal for pure edge detection |
 
+# II. Structural Features
+
+Structural Feature Extraction techniques focus on capturing the **shape or geometry of objects in an image.**
+
+The **Histogram of Oriented Gradients (HOG)** is one of these techniques. It divides the image in cells, and for each pixel of this cell it computes the gradient magnitude and the orientation. It then computes for each cell a histogram of the oriented gradients. These histograms represent the distribution of edge directions in each cell, forming a set of local feature descriptors. 
+
+HoG is typically used to describe larger image regions, whereas SIFT focuses on keypoints.
+
+
+
+# III. Texture Features
+
+Texture-based Feature Extraction methods focus on analyzing patterns, textures and fine surface details. 
+
+**Gabor filters** are among these methods. Gabor filters apply a convolution kernel to the image. It is defined as:
+
+$$
+G(x,y) = \exp\left(-\frac{x'^2 + \gamma^2 y'^2}{2\sigma^2}\right) \cos\left(2\pi f x' + \phi\right)
+$$
+
+$$
+\text{with} \: x' = x \cos\theta + y \sin\theta, \quad y' = -x \sin\theta + y \cos\theta
+$$
 
 
 
