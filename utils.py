@@ -68,7 +68,7 @@ def perform_classification(method_name, df_Y,
     env.evaluate_model(models[best_method_name])
 
     # Store and return Metrics
-    return env.get_metrics(models[best_method_name], method_name, metrics_results_best_methods)
+    return env.get_metrics(models[best_method_name], method_name, metrics_results_best_methods), df_features
 
 def best_preprocessing(i, feature_extraction_method, filter_name, method_name, n_iter=10, fixed_histogram_method=None):
     """
