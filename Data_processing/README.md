@@ -1,4 +1,6 @@
-Multiple processing methods can and are performed on images before applying Feature Extraction techniques.
+Multiple processing methods can and are performed on images before applying Feature Extraction techniques. 
+
+Their implementation can be find in the class ImagesProcessing of the file *images_processing_class.py*. The file *images_processing.ipynb* allows to try out different parameters for the methods.
 
 
 # I. Filters
