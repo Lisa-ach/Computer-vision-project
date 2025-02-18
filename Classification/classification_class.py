@@ -145,7 +145,7 @@ class DataProcessing:
         :return: X_train, X_val, X_test, cumulative_variance
         :rtype: tuple
         """
-        pca=PCA(n_components=min(self.n, self.p)) # min(n_observations, n_features) is the number max of components
+        pca=PCA(n_components=min(self.X_train.shape[0], self.X_train.shape[1])) # min(n_observations, n_features) is the number max of components
         _ = pca.fit_transform(self.X_train)
         cumulative_variance = np.cumsum(pca.explained_variance_ratio_)
         num_components = np.argmax(cumulative_variance >= threshold) + 1
