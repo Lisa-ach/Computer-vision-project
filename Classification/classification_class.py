@@ -97,7 +97,7 @@ class DataProcessing:
             s1 = None
         
         X_train, X_test, y_train, y_test = train_test_split(self.X, self.y, test_size = self.test_size, 
-                                                            random_state=42, shuffle=True, stratify=s1)
+                                                            random_state=42, shuffle=True, stratify=s1) # random_state fixed to get same splitting every time
         
         validation_size = self.val_size / (1 - self.test_size) 
 
@@ -107,7 +107,7 @@ class DataProcessing:
             s2 = None
         
         X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size = validation_size,
-                                                          random_state=42, shuffle=True, stratify=s2)
+                                                          random_state=42, shuffle=True, stratify=s2) # random_state fixed to get same splitting every time
 
         self.X_train = X_train
         self.X_val = X_val
@@ -472,7 +472,7 @@ class BinaryClassification:
 
         return metrics_results, predictions, models_dict
     
-    def TrainTestLogisticRegression(self, find_optimal_hyperparameters=False, depth_max=10):
+    def TrainValLogisticRegression(self, find_optimal_hyperparameters=False, depth_max=10):
 
         """
         Optimizes hyperparameters for all classification methods, trains each model, and evaluates their performance 
@@ -481,7 +481,7 @@ class BinaryClassification:
         This function performs the following steps:
         1. Optimizes hyperparameters for various classification methods by invoking `optimal_hyperparameters`.
         2. Trains each optimized model on the training data.
-        3. Makes predictions on both training and testing datasets.
+        3. Makes predictions on both training and validation datasets.
         4. Evaluates and stores performance metrics for each model on both datasets.
         5. Prepares data for visualization or further analysis.
 
@@ -493,8 +493,8 @@ class BinaryClassification:
     
         :return: 
             A tuple containing:
-            - metrics_results: Dictionary containing the metrics computed on training and testing datasets
-            - predictions: Dictionary containing predictions for each method on training and testing datasets
+            - metrics_results: Dictionary containing the metrics computed on training and validation datasets
+            - predictions: Dictionary containing predictions for each method on training and validation datasets
             - models_dict: Dictionary containing the trained models.
         
         :rtype: tuple (dict, dict)
@@ -507,27 +507,27 @@ class BinaryClassification:
 
         "accuracy" : { 
             "LogReg Train":[],
-            "LogReg Test" :[],
+            "LogReg Val" :[],
             },
 
         "f1-score" : { 
             "LogReg Train":[],
-            "LogReg Test" :[],
+            "LogReg Val" :[],
             },
 
         "recall" :{ 
             "LogReg Train":[],
-            "LogReg Test" :[],
+            "LogReg Val" :[],
             },
 
         "precision" :{ 
             "LogReg Train":[],
-            "LogReg Test" :[],
+            "LogReg Val" :[],
             },
 
         "roc_auc" : { 
             "LogReg Train":[],
-            "LogReg Test" :[],
+            "LogReg Val" :[],
             }
         }
 
@@ -538,14 +538,14 @@ class BinaryClassification:
         model.fit(self.data.X_train, self.data.y_train)
 
         y_train_pred = model.predict(self.data.X_train)
-        y_test_pred = model.predict(self.data.X_test)
+        y_val_pred = model.predict(self.data.X_val)
         
         predictions["LogReg Train"] = y_train_pred
-        predictions["LogReg Test"] = y_test_pred
+        predictions["LogReg Val"] = y_val_pred
             
         for metric in list(self.metrics_dict.keys()):
             metrics_results[metric]["LogReg Train"].append(self.metrics_dict[metric](self.data.y_train, y_train_pred))
-            metrics_results[metric]["LogReg Test"].append(self.metrics_dict[metric](self.data.y_test, y_test_pred))
+            metrics_results[metric]["LogReg Val"].append(self.metrics_dict[metric](self.data.y_val, y_val_pred))
 
         models_dict["LogReg"] = model
 

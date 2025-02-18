@@ -138,7 +138,6 @@ class ImagesProcessing:
         self.images = equalized_images
 
 
-
     def apply_gamma_correction(self, gamma=1.2):
         """
         Apply Gamma Correction to adjust brightness.
@@ -248,10 +247,10 @@ class ImagesProcessing:
             env_classifier = classification.BinaryClassification(data_processed, average="macro")
 
             # Train and evaluate using Logistic Regression
-            metrics_results, _, _ = env_classifier.TrainTestLogisticRegression()
+            metrics_results, _, _ = env_classifier.TrainValLogisticRegression()
 
             # Retrieve the F1-score on the test set for evaluation
-            test_f1_score = metrics_results["f1-score"]["LogReg Test"][0]
+            test_f1_score = metrics_results["f1-score"]["LogReg Val"][0]
 
             # Store results for analysis
             config_result = {
