@@ -5,7 +5,7 @@ import pandas as pd
 
 def perform_classification(method_name, df_Y, 
                            name_best_models, metrics_results_best_methods, best_params_method=None,
-                            feature_extraction_method=None, df_features=None):
+                            feature_extraction_method=None, df_features=None, dim_reduction = None):
     """
     Perform feature extraction, classification, and evaluation.
 
@@ -30,6 +30,9 @@ def perform_classification(method_name, df_Y,
     :param df_features: DataFrame containing features
     :type df_features: pd.DataFrame
 
+    :param dim_reduction: dimension reduction method to use on the features
+    :type dim_reduction: str, default=None
+
     :return: Updated dictionary with classification metrics for the best model.
     :rtype: dict
 
@@ -45,7 +48,7 @@ def perform_classification(method_name, df_Y,
     print(f"Performing Classification for {method_name}")
 
     # Data Processing & Classification
-    data = classification.DataProcessing(df_features, df_Y, stratified=False)
+    data = classification.DataProcessing(df_features, df_Y, stratified=False, dim_reduction=dim_reduction)
     env = classification.BinaryClassification(data, average="macro")
 
     # Cross Validation
