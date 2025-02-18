@@ -47,33 +47,7 @@
             "normalize": true,
             "f1-score": 0.8310749774164408
         },
-    "LBP":
-        {
-            "filter": "gaussian",
-            "filter_params": [
-                [
-                    7,
-                    7
-                ],
-                2
-            ],
-            "histogram": "clahe",
-            "normalize": false,
-            "f1-score": 0.7933247031012551
-        },
-    "Gabor":
-        {
-            "filter": "bilateral",
-            "filter_params": [
-                9,
-                75,
-                75
-            ],
-            "histogram": "standard",
-            "normalize": false,
-            "f1-score": 0.5748937234308578
-        },
-    "otsu":
+    "Otsu":
         {
             "filter": "gaussian",
             "filter_params": [
@@ -87,7 +61,7 @@
             "normalize": true,
             "f1-score": 0.6908388270061376
         },
-    "adaptive":
+    "Adaptive":
         {
             "filter": "bilateral",
             "filter_params": [
@@ -98,6 +72,32 @@
             "histogram": "standard",
             "normalize": true,
             "f1-score": 0.6029411764705882
+        },
+    "Gabor":
+        {
+            "filter": "bilateral",
+            "filter_params": [
+                9,
+                75,
+                75
+            ],
+            "histogram": "standard",
+            "normalize": false,
+            "f1-score": 0.5748937234308578
+        },
+    "LBP":
+        {
+            "filter": "gaussian",
+            "filter_params": [
+                [
+                    7,
+                    7
+                ],
+                2
+            ],
+            "histogram": "clahe",
+            "normalize": false,
+            "f1-score": 0.7933247031012551
         },
     "HOG":
         {

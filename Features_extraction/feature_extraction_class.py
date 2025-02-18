@@ -36,8 +36,8 @@ class FeatureExtraction:
             'ORB':  self.method_ORB,
             'Harris' : self.method_Harris,
             'EDGE': self.method_EDGE,
-            'Otsu': self.method_otsu,
-            'Adaptive': self.method_adaptive,
+            'Otsu': self.method_Otsu,
+            'Adaptive': self.method_Adaptive,
             'Gabor': self.method_Gabor,
             'LBP': self.method_LBP,
             'HOG': self.method_HOG,
@@ -292,7 +292,7 @@ class FeatureExtraction:
 
     # ===================================================================================================
 
-    def method_otsu(self):
+    def method_Otsu(self):
         """Applies Otsu's Thresholding for image segmentation.
 
         Otsu's method determines an optimal global threshold by minimizing intra-class variance,
@@ -323,7 +323,7 @@ class FeatureExtraction:
 
         return features_list
     
-    def method_adaptive(self, block_size = 11, C = 2):
+    def method_Adaptive(self, block_size = 11, C = 2):
         """Applies Adaptive Gaussian Thresholding for image segmentation.
 
         :param block_size: Size of the neighborhood region used to compute the local threshold. Must be an odd integer (e.g., 11, 15, 21).
