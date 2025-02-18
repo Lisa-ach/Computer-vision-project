@@ -1,34 +1,34 @@
 {
     "SIFT": {
-        "nOctaveLayers": 4,
+        "nOctaveLayers": 3,
         "nfeatures": 500,
-        "num_clusters": 10,
+        "num_clusters": 5,
         "sigma": 1.2
     },
     "ORB": {
-        "nfeatures": 300,
+        "nfeatures": 500,
         "num_clusters": 5,
         "scaleFactor": 1.5
     },
     "Harris": {
-        "blockSize": 2,
+        "blockSize": 3,
         "k": 0.04,
         "ksize": 3,
         "threshold": 0.01
     },
     "EDGE": {
-        "canny_threshold1": 100,
-        "canny_threshold2": 200,
+        "canny_threshold1": 50,
+        "canny_threshold2": 150,
         "laplacian_ksize": 3,
-        "sobel_ksize": 5
+        "sobel_ksize": 3
     },
     "Adaptive": {
         "C": 5,
         "block_size": 9
     },
     "Gabor": {
-        "gamma": 1.0,
-        "ksize": 7,
+        "gamma": 0.8,
+        "ksize": 15,
         "lambd": 5,
         "sigma": 6
     },
@@ -37,7 +37,7 @@
         "radius": 2
     },
     "HOG": {
-        "orientations": 6,
+        "orientations": 5,
         "pixels_per_cell": [
             32,
             32
