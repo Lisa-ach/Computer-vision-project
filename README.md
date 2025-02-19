@@ -1,5 +1,5 @@
 This project was made for a Computer Vision class. The goal was to apply classic computer vision methods such as Feature Extraction methods.
 
-The study consists in **Potholes detection**.
+The study consists in **Pothole detection**.
 
 The dataset, downloadable on Kaggle (https://www.kaggle.com/datasets/atulyakumar98/pothole-detection-dataset/data), is composed of roads **images with and without potholes** (329 images with potholes and 352 images of roads without any issue). All kinds of roads and potholes are represented in this dataset. The **evaluation and comparison of Feature Extraction methods** will be done through Binary **Classification** (presence or absence of potholes). Indeed, different types of features, obtained through diverse Feature Extraction methods will be given as input for Classification, so that performance results such as accuracy and F1-score can quantify their effectiveness. Deep learning methods such as a Convolutional Neural Network were also coded for comparison but are not the main focus of the experiment.

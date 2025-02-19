@@ -20,13 +20,13 @@ The **Difference of Gaussians (DoG)** is then computed by subtracting images fro
 
 $$D(x,y,\sigma) = L(x,y,k\sigma) - L(x,y,\sigma)$$
 
-Key points are defined as local extrema in the DoG images. To find them, each pixel in a DoG image is compared to its 26 neighbors: 8 pixels from the same image, 9 pixels in the previous scale and 9 pixels in the next scale. It is considered a key point if this point is an extremum in this neighborhood. Some techniques are also used afterwards to remove some unstable or weak keypoints such as the one along edges.
+Keypoints are defined as local extrema in the DoG images. To find them, each pixel in a DoG image is compared to its 26 neighbors: 8 pixels from the same image, 9 pixels in the previous scale and 9 pixels in the next scale. It is considered a keypoint if this point is an extremum in this neighborhood. Some techniques are also used afterwards to remove some unstable or weak keypoints such as the one along edges.
 
-Once the key points are detected, **descriptors** are created to describe them and so that they can be matched across different images. To define them, for each pixel belonging to a $16 \times 16$ grid around a key point, are first computed the gradient magnitude $M$ and orientation $\theta$ using finite differences. If we define $G_x = L(x+1,y) - L(x-1,y)$ the gradient in X direction, and $G_y = L(x,y+1) - L(x,y-1)$, then they can defined as:
+Once the keypoints are detected, **descriptors** are created to describe them and so that they can be matched across different images. To define them, for each pixel belonging to a $16 \times 16$ grid around a keypoint, are first computed the gradient magnitude $M$ and orientation $\theta$ using finite differences. If we define $G_x = L(x+1,y) - L(x-1,y)$ the gradient in X direction, and $G_y = L(x,y+1) - L(x,y-1)$, then they can defined as:
 
 $$M(x,y) = \sqrt{G_x^2 + G_y^2} ; \theta(x,y) = tan^{-1} (\frac{G_y}{G_x})$$
 
-The $16 \times 16$ grid is divided into 16 smaller $4 \times 4$ cells so that each $4 \times 4$ region has its own orientation histogram, each containing 8 orientation bins. Therefore, each cell gives 8 orientation bins, and consequently the key point descriptor contains $8 \times 16 = 128$ values. 
+The $16 \times 16$ grid is divided into 16 smaller $4 \times 4$ cells so that each $4 \times 4$ region has its own orientation histogram, each containing 8 orientation bins. Therefore, each cell gives 8 orientation bins, and consequently the keypoint descriptor contains $8 \times 16 = 128$ values. 
 
 
 - **ORB (Oriented FAST and Rotated BRIEF), 2011**
@@ -39,7 +39,7 @@ Edge detection algorithms focus on identifying object boundaries where there are
 
 ### a) Gradient-Based Edge Detectors
 
-Gradient-based methods compute the **first derivative** of the image to detect areas of high intensity change. They are **effective at finding edges** but tend to be **sensitive to noise**.
+Gradient-based methods compute the **first derivative** of the image to detect areas of high intensity change. They are **effective at finding edges** but tend to be **sensitivity to noise**.
 
 - **Canny Edge Detector (1986)**
 
@@ -171,7 +171,7 @@ Structural Feature Extraction techniques focus on capturing the **shape or geome
 
 The **Histogram of Oriented Gradients (HOG)** is one of these techniques. It divides the image in cells, and for each pixel of this cell it computes the gradient magnitude and the orientation. It then computes for each cell a histogram of the oriented gradients. These histograms represent the distribution of edge directions in each cell, forming a set of local feature descriptors. 
 
-HoG is typically used to describe larger image regions, whereas SIFT focuses on keypoints.
+HoG is typically used to  describe  larger  image  regions,  whereas  SIFT,  that  also uses orientations, focuses on keypoints.
 
 
 
@@ -179,7 +179,7 @@ HoG is typically used to describe larger image regions, whereas SIFT focuses on 
 
 Texture-based Feature Extraction methods focus on analyzing patterns, textures and fine surface details. 
 
-**Gabor filters** are among these methods. Gabor filters apply a convolution kernel to the image. It is defined as:
+**Gabor filters** are among these methods. Gabor filters apply a convolution kernel to the image. Different Gabor filters are used to extract the useful features from an image, each one focusing on a special frequency and orientation. The kernel can be defined as:
 
 $$
 G(x,y) = \exp\left(-\frac{x'^2 + \gamma^2 y'^2}{2\sigma^2}\right) \cos\left(2\pi f x' + \phi\right)
