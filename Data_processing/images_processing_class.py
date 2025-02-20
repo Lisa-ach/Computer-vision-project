@@ -249,7 +249,7 @@ class ImagesProcessing:
             # Train and evaluate using Logistic Regression
             metrics_results, _, _ = env_classifier.TrainValLogisticRegression()
 
-            # Retrieve the F1-score on the test set for evaluation
+            # Retrieve the F1-score on the validation set for evaluation
             test_f1_score = metrics_results["f1-score"]["LogReg Val"][0]
 
             # Store results for analysis
