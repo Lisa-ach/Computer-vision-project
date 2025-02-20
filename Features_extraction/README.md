@@ -22,7 +22,7 @@ $$D(x,y,\sigma) = L(x,y,k\sigma) - L(x,y,\sigma)$$
 
 Keypoints are defined as local extrema in the DoG images. To find them, each pixel in a DoG image is compared to its 26 neighbors: 8 pixels from the same image, 9 pixels in the previous scale and 9 pixels in the next scale. It is considered a keypoint if this point is an extremum in this neighborhood. Some techniques are also used afterwards to remove some unstable or weak keypoints such as the one along edges.
 
-Once the keypoints are detected, **descriptors** are created to describe them and so that they can be matched across different images. To define them, for each pixel belonging to a $16 \times 16$ grid around a keypoint, are first computed the gradient magnitude $M$ and orientation $\theta$ using finite differences. If we define $G_x = L(x+1,y) - L(x-1,y)$ the gradient in X direction, and $G_y = L(x,y+1) - L(x,y-1)$, then they can defined as:
+Once the keypoints are detected, **descriptors** are created to describe them and so that they can be matched across different images. To define them, for each pixel belonging to a $16 \times 16$ grid around a keypoint, are first computed the gradient magnitude $M$ and orientation $\theta$ using finite differences. If we define $G_x = L(x+1,y) - L(x-1,y)$ and $G_y = L(x,y+1) - L(x,y-1)$ the gradients respectively in X and Y direction, then magnitude and orientation can defined as:
 
 $$M(x,y) = \sqrt{G_x^2 + G_y^2} ; \theta(x,y) = tan^{-1} (\frac{G_y}{G_x})$$
 
@@ -32,6 +32,37 @@ The $16 \times 16$ grid is divided into 16 smaller $4 \times 4$ cells so that ea
 - **ORB (Oriented FAST and Rotated BRIEF), 2011**
 
 ORB is a fast and free **alternative to SIFT and SURF**. It uses the **FAST algorithm** to detect keypoints. FAST identifies corners by analyzing around each pixel a small circular neighborhood of 16 pixels. If $N$ ($N = 9$ typically) contiguous pixels in the circle are all darker or brighter by a threshold compared to a pixel, then the pixel is considered a corner. FAST is efficient as instead of checking all pixels in the circle, it first checks if 4 of these pixels meet the condition, and if it is the case, the entire circle is checked.
+
+- **Harris corner detection**
+
+Harris corner detection is an algorithm that allows to identify corners in an image. Corners are points where there are significant changes in intensity in **multiple directions**, making them useful for feature detection and tracking.
+
+First, it computes the matrix M, defined as:
+
+$$
+M =
+\sum\limits_{x,y} 
+w(x,y)
+\begin{bmatrix}
+I_x^2 & I_x I_y \\
+I_x I_y & I_y^2
+\end{bmatrix}
+$$
+
+where $I_x$ and $I_y$ are derivatives  of the image in the X and Y direction:
+$$
+I_x = \frac{\partial I}{\partial x}, \quad I_y = \frac{\partial I}{\partial y};
+$$
+
+$
+w(x,y)$ is a window function (Gaussian for instance) that gives more weight to central pixels.
+
+
+It then computes Harris corner score:
+
+$$R = det(M) - k trace(M)^2$$
+
+Typically k is equal to 0.04 - 0.06. The values of R are positive near a corner, negative near a contour, and low in a region of constant intensity.
 
 ## 2. Edge detection algorithms
 
@@ -196,6 +227,8 @@ $$
 David G. Lowe. (2004) *Distinctive Image Features from Scale-Invariant Keypoints.* International Journal of Computer Vision 
 
 Edward Rosten and Tom Drummond. (2006) *Machine Learning for High-Speed Corner Detection.* European Conference on Computer Vision
+
+Chris Harris and Mike Stephens. (1988) *A Combined Corner and Edge Detector.*
 
 John Canny (1986) *A Computational Approach to Edge Detection.*
 
